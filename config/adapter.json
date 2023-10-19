@@ -1,0 +1,6 @@
+{
+	"oom_pattern" : "Tin nhắn của bạn chưa được gửi đi do tài khoản không đủ. Vui lòng nạp thêm tiền vào tài khoản để thực hiện tính năng này. Cảm ơn đã sử dụng dịch vụ của VinaPhone.",
+	"worker_count" : 4,
+	"queue_size" : 8192,
+	"action_call_in_url" : "http://10.84.11.74:8080/action-call-in"
+}

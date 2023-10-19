@@ -1,0 +1,89 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build",
+			"type": "shell",
+			"command": "./run.sh",
+			"args": [
+				"./build/viettalk-server",
+				"/opt/viettalk-server/viettalk-server",
+				"10.84.5.168",
+				"9092",
+				"root",
+				"123456a@",
+				"-c server_redis.conf",
+				"-b"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Build + Debug",
+			"type": "shell",
+			"command": "./run.sh",
+			"args": [
+				"./build/viettalk-server",
+				"/opt/viettalk-server/viettalk-server",
+				"10.84.5.168",
+				"9092",
+				"root",
+				"123456a@",
+				"-c server_redis.conf",
+				"-bd"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Debug",
+			"type": "shell",
+			"command": "./run.sh",
+			"args": [
+				"./build/viettalk-server",
+				"/opt/viettalk-server/viettalk-server",
+				"10.84.5.168",
+				"9092",
+				"root",
+				"123456a@",
+				"-c server_redis.conf",
+				"-d"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build protobuf",
+			"type": "shell",
+			"command": "./run.sh",
+			"args": [
+				"./build/viettalk-server",
+				"/opt/viettalk-server/viettalk-server",
+				"10.84.5.168",
+				"9092",
+				"root",
+				"123456a@",
+				"-c server_redis.conf",
+				"-p"
+			]
+		},
+		{
+			"label": "Build + Push",
+			"type": "shell",
+			"command": "./run.sh",
+			"args": [
+				"./build/viettalk-server",
+				"/opt/viettalk-server/viettalk-server",
+				"10.84.5.167",
+				"9092",
+				"root",
+				"CSDA@123",
+				"-c server_redis.conf",
+				"-bu"
+			],
+			"problemMatcher": []
+		}
+	]
+}

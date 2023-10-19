@@ -1,0 +1,41 @@
+package model;
+
+enum DataType
+{
+	META = 0;
+	ENTITY = 1;
+	RELATION = 2;
+	EVENT = 3;
+	ACTIVITY = 4;
+	INDEX = 5;
+	ARCHIVE = 6;
+	LAST = 100;
+}
+
+message Entity
+{
+	required bytes id = 1;
+	required uint32 type = 2;
+	extensions 3 to max;
+}
+
+message Relation
+{
+	extensions 1 to max;
+}
+
+message Index
+{
+	required uint32 type = 1;
+	required bytes key = 2;
+	required bytes entity = 3;
+}
+
+message Event
+{
+	required bytes id = 1;
+	required uint32 type = 2;
+	required uint64 time = 3;
+	extensions 4 to max;
+}
+

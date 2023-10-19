@@ -1,0 +1,87 @@
+import "model.proto";
+
+package social;
+
+
+message Post
+{
+	enum State { NORMAL = 0; EDITED = 1; DELETED = 2; EXPIRE = 3; }
+	extend model.Entity	 { optional Post POST = 15; }
+	required bytes sender_id = 1;
+	required uint32 type = 2;/*normal or share */
+	required bytes fake_id = 3;
+	required uint64 time = 4;
+	optional string text = 5;
+	optional string place = 6;
+	optional uint32 like_count = 7 [default = 0];
+	optional uint32 comment_count = 8 [default = 0];
+	optional uint32 privacy = 9;
+	optional uint32 state = 10;
+	optional bytes share_post_id = 11;
+	optional string share_text = 12;
+	optional bytes user_share_id = 13;
+	optional uint32 share_count = 14;
+	optional double lon = 15;
+	optional double lat = 16;
+	optional uint64 share_time = 17;
+	optional uint32 share_privacy = 18;
+}
+
+message Comment
+{
+	extend model.Entity	 { optional Comment COMMENT = 16; }
+	required string text = 1;
+	required bytes sender_id = 2;
+	required uint64 time = 3;
+}
+
+message Image
+{
+	enum State { NORMAL = 0; DELETED = 1; }
+	extend model.Entity	 { optional Image IMAGE = 17; }
+	required string url = 1;
+	required uint32 state = 2;
+	optional string thumb_nail = 3;
+	optional uint32 size = 4;
+	optional uint32 width = 5;
+	optional uint32 height = 6;
+}
+
+message Notification
+{
+	extend model.Entity { optional Notification NOTIFICATION = 18; }
+	required bytes source_id = 1;
+	required bytes user_id = 2;
+	required bytes data = 3;
+	required uint32 type = 4;
+	required uint64 time = 5;
+	optional bytes ref_id = 6;/*COMMENT, LIKE --> ref_id is post_id, || SAY_HELLO, FOLLOW --> ref_id is contact_id */
+    optional bool unseen = 7;
+}
+
+message RelateTo
+{
+	extend model.Relation { optional RelateTo RELATE_TO = 10; }
+	required uint32 type = 1;
+}
+
+message Follow
+{
+	extend model.Relation { optional Follow FOLLOW = 11; }
+	optional bool hidden_timeline = 1 [default = false];
+}
+
+message HasImage
+{
+	extend model.Relation { optional HasImage HAS_IMAGE = 13; }
+	required uint32 type = 1;/*PUBLIC = 0; ONLY_ME = 1; */
+	required uint64 time = 2;
+}
+
+message Report
+{
+    extend model.Entity	 { optional Report REPORT = 19; }
+    required string text = 1;
+    required bytes sender_id = 2;
+    required uint64 time = 3;
+}

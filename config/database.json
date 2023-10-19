@@ -1,0 +1,12 @@
+{
+	"redis" :
+	[	
+		{"user" : "", "pass" : "vivas@123"},
+		{"host_read" : "10.84.5.146", "port_read" : "6381"},
+		{"host_write" : "10.84.5.146", "port_write" : "6380"}
+	],
+	"cassandra" :
+	[
+		{"user" : "", "pass" : ""}
+	]
+}

@@ -1,0 +1,350 @@
+syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [400-429]
+//receive: [4-9]
+
+//API for Web Handler
+message GetOtp
+{
+    message Request
+    {
+        required string tel = 1;
+    }
+    message Reply
+    {
+        required string otp = 1;
+    }
+    extend comm.Reply { optional Reply ID = 400; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        OTP_EXPIRED = 2;
+        OTP_NOT_EXIST = 3;
+    }
+}
+
+// send system message for one/all viettalk user
+message SendSystemMsg
+{
+    message Request
+    {
+        optional string tel = 1;
+        required string content = 2;
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 401; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        CONTENT_INVALID = 2;
+        USER_NOT_EXIST = 3;
+    }
+}
+
+// logic: Kick user (logout user) --> update status of user from ACTIVE to INACTIVE
+
+message BanUser
+{
+    message Request
+    {
+        required string tel = 1;
+        required string reason_ban = 2;
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 402; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        CONTENT_INVALID = 2;
+        USER_NOT_EXIST = 3;
+    }
+}
+
+message SearchUser
+{
+    message Request
+    {
+        required string tel = 1;
+    }
+    message Reply
+    {
+        optional string name = 1;
+        optional string avatar = 2;
+        optional string mood = 3;
+        required string tel = 4;
+        optional string address = 5;
+        optional uint64 dob = 6;
+        optional uint32 gender = 7;
+        optional string vnum = 8;
+        optional string reason_ban = 9;
+    }
+    extend comm.Reply { optional Reply ID = 403; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        USER_NOT_EXIST = 2;
+    }
+}
+
+message ExtraProfile
+{
+    message Request
+    {
+        required string tel = 1;
+    }
+    message Reply
+    {
+        optional string name = 1;
+        optional string avatar = 2;
+        optional string mood = 3;
+        required string tel = 4;
+        optional string address = 5;
+        optional uint64 dob = 6;
+        optional uint32 gender = 7;
+        optional string vnum = 8;
+        optional uint32 balance = 9;
+        optional string sub_name = 10;
+        optional string reason_ban = 11;
+    }
+    extend comm.Reply { optional Reply ID = 404; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        USER_NOT_EXIST = 2;
+        VT_ERROR = 3;
+    }
+}
+
+// logic: update field try_times in passcode entity = 0
+message ResetNumOtp
+{
+    message Request
+    {
+        required string tel = 1;
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 405; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        OTP_NOT_EXIST = 2;
+    }
+}
+
+message AssignVnum
+{
+    message Request
+    {
+        required string tel = 1;
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 406; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        USER_NOT_EXIST = 2;
+    }
+}
+
+// update profile: name, gender, dob, email
+
+message UpdateUserInfo
+{
+	message Request
+	{
+		required string tel = 1;
+        optional string name = 2;
+        optional uint64 dob = 3;
+        optional uint32 gender = 4;
+        optional string address = 5;
+	}
+	extend comm.Reply { optional Reply ID = 407; }
+	message Reply
+	{
+	}
+	enum Error
+	{
+		TEL_INVALID = 1;
+        USER_NOT_EXIST = 2;
+	}
+}
+
+// get list report user
+message ListReportUser
+{
+	message Request
+	{
+		optional bytes key = 1;
+		required uint32 count = 2;
+	}
+
+	extend comm.Reply { optional Reply ID = 408; }
+	message ReportUser
+	{
+		required string content = 1;
+		required bytes sender_id = 2;
+		required string sender_name = 3;
+		required bytes user_id = 4;
+		required string user_name = 5;
+		required uint64 time = 6;
+	}
+	message Reply
+	{
+		repeated ReportUser reportUsers = 1;
+	}
+}
+
+// get list report user
+message ListReportPost
+{
+	message Request
+	{
+		optional bytes key = 1;
+		required uint32 count = 2;
+	}
+	extend comm.Reply { optional Reply ID = 409; }
+
+	message ReportPost
+	{
+		required string content = 1;
+		required bytes sender_id = 2;
+		required string sender_name = 3;
+		required bytes post_id = 4;
+		required uint64 time = 5;
+	}
+	message Reply
+	{
+		repeated ReportPost reportPosts = 1;
+	}
+}
+
+// get list feedback user
+message ListUserFeedback
+{
+	message Request
+	{
+		optional bytes key = 1;
+		required uint32 count = 2;
+	}
+	extend comm.Reply { optional Reply ID = 410; }
+
+	message UserFeedBack
+	{
+		required string content = 1;
+		required bytes sender_id = 2;
+		required string sender_name = 3;
+		required uint32 type = 4;
+		required uint64 time = 5;
+	}
+	message Reply
+	{
+		repeated UserFeedBack userFeedbacks = 1;
+	}
+}
+// create post for viettalk user
+message SendPost
+{
+	message Request
+	{
+        optional string text = 1;
+        optional string place = 2;
+        optional uint32 privacy = 3;
+	}
+	extend comm.Reply { optional Reply ID = 411; }
+	message Reply
+	{
+	}
+	enum Error
+	{
+        CONTENT_INVALID = 1;
+	}
+}
+// Delete account
+
+message DelAccount
+{
+	message Request
+	{
+        required string tel = 1;
+	}
+	extend comm.Reply { optional Reply ID = 412; }
+	message Reply
+	{
+	}
+	enum Error
+	{
+        TEL_INVALID = 1;
+		USER_NOT_EXIST = 2;
+	}
+}
+
+message DelPost
+{
+	message Request
+	{
+		repeated bytes post_ids = 1;
+		required string del_reason = 2;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 413; }
+	enum Error
+	{
+		POST_INVALID = 1;
+        CONTENT_INVALID = 2;
+	}
+}
+
+message AuthenticateUser //HTTP
+{
+	message Request
+	{
+		required string user_id = 1;
+		required string session_id = 2;
+	}
+	message Reply
+	{
+		required string tel = 1;
+	}
+	extend comm.Reply { optional Reply ID = 414; }
+	enum Error
+	{
+		ACCOUNT_INVALID = 1;
+		SESSION_INVALID = 2;
+	}
+}
+
+message ListPost
+{
+	message Request
+	{
+		required string tel = 1;
+		optional bytes begin_key = 2;
+		optional bytes end_key = 3;
+		optional uint32 size = 4 [default = 10];
+	}
+	message Reply
+	{
+		repeated Post posts = 1;
+		optional bool end = 2 [default = false];
+	}
+	extend comm.Reply { optional Reply ID = 415; }
+
+	enum Error
+	{
+		TEL_INVALID = 1;
+        USER_NOT_EXIST = 2;
+	}
+}
+

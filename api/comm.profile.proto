@@ -1,0 +1,730 @@
+syntax = "proto2";
+import "comm.model.proto";
+import "comm.call.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [100-129]
+//receive: [4-9]
+
+message ReceiveProfile
+{
+	extend comm.Receive { optional ReceiveProfile RECEIVE_PROFILE = 4; }
+	required uint32 type = 1;
+	optional Profile profile = 2;
+	enum Type
+	{
+		UPDATE = 1;
+		KICK = 2;
+	}
+}
+
+message ReceiveSession
+{
+	extend comm.Receive { optional ReceiveSession RECEIVE_SESSION = 5; }
+	required Session session = 1;
+}
+
+message ReceiveQRcode
+{
+	extend comm.Receive { optional ReceiveQRcode RECEIVE_QRCODE = 6; }
+	required bytes user_id = 1;
+	required bytes session_id = 2;
+}
+
+message ReceiveStateSticker
+{
+    extend comm.Receive { optional ReceiveStateSticker RECEIVE_STATE_STICKER = 7; }
+    required uint32 sticker_id = 1;
+    required bool dowloaded = 2;
+    optional uint64 time_download = 3;	//  Sticker time downloaded 
+}
+
+message KeepAlive
+{
+	message Request
+	{
+	}
+	message Reply
+	{
+		repeated Presence presences = 1;
+	}
+	extend comm.Reply { optional Reply ID = 100; }
+}
+
+message Authenticate //HTTP
+{
+	// MyVNPT # SONTV # 07-05-20 # Remove tel, pass
+	message Request
+	{
+		optional string uid = 1;
+		optional string password = 2;
+		optional uint32 platform = 3;
+		optional string token = 4;
+		optional string token_voip = 5;
+		optional string platform_version = 6;
+		optional float screen_ratio = 7;
+		optional string device_name = 8;
+		optional string platform_name = 9;
+		optional string ip_address = 10;
+		optional string app_version = 11;
+		optional string workspace_code = 12;//not set if viettalk
+		optional string access_token = 14;
+	}
+	message Reply
+	{
+		required bytes user_id = 1;
+		required bytes session_id = 2;
+		required string host = 3;
+		required uint32 port = 4;
+		optional bool is_create_new = 5;
+	}
+	extend comm.Reply { optional Reply ID = 101; }
+	enum Error
+	{
+		ACCOUNT_INVALID		= 1;
+		PASSWORD_INVALID = 2;
+		PLATFORM_INVALID	= 3;
+		TOKEN_INVALID		= 4;
+		ACCOUNT_NOT_ACTIVE	= 5;
+		WORKSPACE_CODE_NOT_MATCH = 6;
+		ACCESS_TOKEN_INVALID	= 7;
+	}
+}
+
+message Login
+{
+	// MyVNPT # SONTV # 07-05-20 # Remove workspace
+	message Request
+	{
+		required bytes user_id = 1;
+		required bytes session_id = 2;
+		optional string workspace_code = 3;//not set if viettalk
+		optional string app_version = 4;
+		optional double lat = 5;
+		optional double lon = 6;
+	}
+	message Reply
+	{
+		required Session session = 1;
+		optional uint64 server_time = 2;
+		required Profile profile = 3;
+		optional ReceiveNewCall active_call = 4;
+		optional string sip_user_name = 5;
+	    optional string sip_domain = 6;
+	    optional string sip_proxy = 7;
+	    optional string sip_password = 8;
+	    optional bool show_review = 9 [default = true];
+	}
+	extend comm.Reply { optional Reply ID = 103; }
+	enum Error
+	{
+		SESSION_EXPIRED = 1;
+		USER_INVALID = 2;
+		WORKSPACE_CODE_NOT_MATCH = 3;
+		APP_VERSION_UNSUPPORTED = 4;	// app version not supported by server
+		APP_VERSION_REJECTED = 5;		// app version was rejected (in blacklist)
+	}
+}
+
+message Logout
+{
+	message Request{}
+	message Reply{}
+	extend comm.Reply { optional Reply ID = 104; }
+}
+
+message ChangePassword
+{
+	message Request
+	{
+		required string current = 1;
+		required string password = 2;
+		required bool kick_others = 3;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 105; }
+	enum Error
+	{
+		PASSWORD_INVALID = 1;
+		PASSWORD_WEAKNESS = 2;
+	}
+}
+
+message UpdateProfile
+{
+	message Request
+	{
+		required Profile profile = 1;
+	}
+	message Reply
+	{
+		required Profile profile = 1;
+	}
+	extend comm.Reply { optional Reply ID = 106; }
+	enum Error
+	{
+		NAME_INVALID = 1;
+		ADDRESS_INVALID = 2;
+		GENDER_INVALID = 3;
+		DOB_INVALID = 4;
+		RELATIONSHIP_INVALID = 5;
+	}
+}
+
+message ChangeAvatar //FILE
+{
+	message Request
+	{
+		optional bytes user_id = 1;
+	}
+	message Reply
+	{
+		required string avatar = 1;
+	}
+	extend comm.Reply { optional Reply ID = 110; }
+}
+
+message UpdateDeviceToken
+{
+	message Request
+	{
+		optional string token_normal = 1;
+		optional string token_voip = 2;
+	}
+	message Reply
+	{
+
+	}
+	extend comm.Reply { optional Reply ID = 112; }
+}
+
+/************** Register And active account *******************/
+message CheckAccount //HTTP
+{
+    enum State { NOT_EXISTED = -1; ACTIVE = 0; INACTIVE = 1; BOT = 2; SYSTEM = 3; BANNED = 4; TEMP_LOCKED = 5;}
+	message Request
+	{
+		required string tel = 1;
+	}
+	message Reply
+	{
+		required int32 state = 1;
+		optional string host = 2;//return host, port for Desktop when state of user is ACTIVE
+		optional uint32 port = 3;
+		optional bool none_password = 4;
+	}
+	extend comm.Reply { optional Reply ID = 113; }
+	enum Error
+	{
+		TEL_INVALID = 1;
+        EXCEEDED_TIMES_LIMIT = 2;
+	}
+}
+
+message Register //HTTP
+{
+	message Request
+	{
+		required string tel = 1;
+		required string name = 2;
+		required string password = 3;
+		required string otp = 4;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 108; }
+	enum Error
+	{
+		OTP_NOT_MATCH = 1;
+		OTP_EXPIRED = 2;
+        NAME_INVALID = 3;
+        PASSWORD_INVALID = 4;
+        TEL_INVALID = 5;
+	}
+}
+
+message ForgotPassword //HTTP
+{
+	message Request
+	{
+		required string tel = 1;
+		required string password = 2;
+		required string otp = 3;
+		optional bool kick_out = 5 [default = false];
+		optional uint32 platform = 6;
+		optional string token = 7;
+		optional string token_voip = 8;
+		optional string platform_version = 9;
+		optional float screen_ratio = 10;
+		optional string device_name = 11;
+		optional string platform_name = 12;
+		optional string ip_address = 13;
+		optional string app_version = 14;
+	}
+	message Reply
+	{
+		optional bytes user_id = 1;
+		optional bytes session_id = 2;
+		optional string host = 3;
+		optional uint32 port = 4;
+	}
+	extend comm.Reply { optional Reply ID = 107; }
+	enum Error
+	{
+		PASSWORD_INVALID = 1;
+		OTP_NOT_MATCH = 2;
+		OTP_EXPIRED = 3;
+        TEL_INVALID = 4;
+	}
+}
+
+message RequestOTP	//HTTP
+{
+	message Request
+	{
+		required string tel = 1;
+	}
+	message Reply
+	{
+	    optional uint64 wait_time = 1;
+	}
+	extend comm.Reply { optional Reply ID = 114; }
+	enum Error
+	{
+        TEL_INVALID = 1;
+        EXCEEDED_TIMES_LIMIT = 2;
+		RECENT_GET_OTP = 3;
+	}
+}
+
+message GetSipAccount
+{
+	message Request
+	{
+	}
+	message Reply
+	{
+		required string sip_user_name = 1;
+	    required string sip_domain = 2;
+	    required string sip_proxy = 3;
+	    required string sip_password = 4;
+	}
+	extend comm.Reply { optional Reply ID = 115; }
+}
+
+message GetLastVersion
+{
+	message Request
+	{
+		optional uint32 major_version = 1;
+		optional uint32 minor_version = 2;
+		optional uint32 build_version = 3;
+	}
+	message Reply
+	{
+        required uint32 major_version = 1;
+		required uint32 minor_version = 2;
+		required uint32 build_version = 3;
+		required string url = 4;
+		optional string release_note = 5;
+	}
+	extend comm.Reply { optional Reply ID = 116; }
+}
+
+message ListSessions
+{
+    message Request
+	{
+	}
+
+    message Session
+	{
+	    optional string device_name = 1;
+		optional string location = 2;
+		optional bool owner_session = 3;
+		optional uint32 platform = 4;
+		optional uint64 time_login = 5;
+		optional string platform_version = 6;
+		required bytes session_id = 7;
+		optional string platform_name = 8;
+	}
+
+    message Reply
+	{
+	    repeated Session sessions = 1;
+	}
+	extend comm.Reply { optional Reply ID = 117; }
+}
+
+message LogoutOtherSessions
+{
+    message Request
+	{
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 118; }
+}
+
+message LogoutSession
+{
+    message Request
+	{
+	    required bytes session_id = 1;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 119; }
+}
+
+message GetQRcode
+{
+    message Request
+	{
+		required string tel = 1;
+		optional string device_name = 2;
+		optional string ip_address = 3;
+		optional string platform_name = 4;
+		optional string platform_version = 5;
+	}
+	message Reply
+	{
+		required string qr_token = 1;
+	}
+	extend comm.Reply { optional Reply ID = 120; }
+}
+
+message CheckQRcode
+{
+    message Request
+	{	
+	    required string qr_token = 1;
+	}
+	message Reply
+	{
+		optional string device_name = 1;
+		optional string ip_address = 2;
+		optional string platform_name = 3;
+		optional string platform_version = 4;
+	}
+	extend comm.Reply { optional Reply ID = 121; }
+	enum Error
+	{
+		QRCODE_NOT_MATCH = 1;
+		QRCODE_TIMEOUT = 2;
+		QRCODE_TEL_INVALID = 3;
+	}
+}
+
+message AcceptLoginQRcode
+{
+	message Request
+	{
+		required string qr_token = 1;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 122; }
+}
+
+message ListSticker
+{
+	message Icon
+	{
+		required string url = 1;
+        required string url_thumbnail = 2;
+        optional uint32 width = 3;  // Icon width
+        optional uint32 height = 4; // Icon height
+	}
+	message Sticker
+	{
+		required uint32 sticker_id = 1;
+		required string name = 2;
+		required bool downloaded = 3;
+		required string thumbnail = 4;
+		optional string sticker_description = 5;
+		optional uint32 price = 6;
+        repeated Icon icons = 7;
+        optional uint64 time_download = 8;
+        optional bool is_default = 9;   // True if sticker is default sticker
+	}
+	message Request
+	{
+	}
+	message Reply
+	{
+        repeated Sticker stickers = 1;
+        optional string sticker_version = 2;
+	}
+	extend comm.Reply { optional Reply ID = 123; }
+}
+
+
+message SetStateSticker
+{
+	message Request
+	{
+		required uint32 sticker_id = 1;
+        required bool downloaded = 2;
+        optional uint64 time_download = 3;
+	}
+	message Reply
+	{
+		required uint32 sticker_id = 1;
+        required bool downloaded = 2;
+        optional uint64 time_download = 3;
+	}
+	extend comm.Reply { optional Reply ID = 124; }
+}
+
+message CheckAccountBy3G //http
+{
+    enum State { NOT_EXISTED = -1; ACTIVE = 0; INACTIVE = 1; BOT = 2; SYSTEM = 3; BANNED = 4; TEMP_LOCKED = 5;}
+	message Request
+	{	
+		required uint32 platform = 1;
+		optional string token = 2;
+		optional string token_voip = 3;
+		optional string platform_version = 4;
+		optional float screen_ratio = 5;
+		optional string device_name = 6;
+		optional string platform_name = 7;
+		optional string ip_address = 8;
+		optional string app_version = 9;
+	}
+	message Reply
+	{
+		required int32 state = 1;
+		optional bytes user_id = 2;
+		optional bytes session_id = 3;
+		optional string host = 4;
+		optional uint32 port = 5;
+		optional bool none_password = 6;
+		optional string tel = 7;
+		optional string name = 8;
+	}
+	extend comm.Reply { optional Reply ID = 125; }
+	enum Error
+	{
+        VINAPHONE_3G_INVALID = 1;
+	}
+}
+
+message ActiveAccountBy3G //http
+{
+	message Request
+	{	
+		required string name = 1;
+		required string password = 2;
+		required uint32 platform = 3;
+		optional string token = 4;
+		optional string token_voip = 5;
+		optional string platform_version = 6;
+		optional float screen_ratio = 7;
+		optional string device_name = 8;
+		optional string platform_name = 9;
+		optional string ip_address = 10;
+		optional string app_version = 11;
+	}
+	message Reply
+	{
+		required bytes user_id = 1;
+		required bytes session_id = 2;
+		required string host = 3;
+		required uint32 port = 4;
+	}
+	extend comm.Reply { optional Reply ID = 126; }
+	enum Error
+	{
+        NAME_SPECIAL_CHARACTERS_INVALID = 1;
+        NAME_TOO_LONG_INVALID = 2;
+        NAME_CONTAINS_PROVIDER_INVALID = 3;
+        PASSWORD_SHORT_INVALID = 4;
+        VINAPHONE_3G_INVALID = 5;
+	}
+}
+
+message ListWorkSpace
+{
+	message Request
+	{
+	}
+	message Reply
+	{
+		repeated WorkSpace workspaces = 1;
+	}
+	extend comm.Reply { optional Reply ID = 127; }
+}
+
+message SearchMember
+{
+    message Request
+	{
+	    required string filter = 1;
+	    optional string workspace_code = 2;
+	    optional uint32 page_no = 3;
+	    optional uint32 page_record = 4;
+	}
+	message Reply
+	{
+		required string filter = 1;
+		optional string workspace_code = 2;
+		repeated  Profile members = 3;
+	}
+	extend comm.Reply { optional Reply ID = 128; }
+}
+
+message WorkspaceAuthenticate //HTTP
+{
+	message Request
+	{
+		required string uid = 1;// tel
+		optional string password = 2;
+		required uint32 platform = 3;
+		optional string token = 4;
+		optional string token_voip = 5;
+		optional string platform_version = 6;
+		optional float screen_ratio = 7;
+		optional string device_name = 8;
+		optional string platform_name = 9;
+		optional string ip_address = 10;
+		optional string app_version = 11;
+		optional string workspace_code = 12;//not set if viettalk
+		optional string app_id = 13;
+	}
+	message Reply
+	{
+		required bytes user_id = 1;
+		required bytes session_id = 2;
+		required string host = 3;
+		required uint32 port = 4;
+	}
+	extend comm.Reply { optional Reply ID = 129; }
+	enum Error
+	{
+		ACCOUNT_INVALID = 1;
+		PASSWORD_INVALID = 2;
+		PLATFORM_INVALID = 3;
+		TOKEN_INVALID = 4;
+		ACCOUNT_NOT_ACTIVE = 5;
+		WORKSPACE_CODE_NOT_MATCH = 6;
+		APP_ID_NOT_MATCH = 7;
+	}
+}
+
+message GetMemberInfo
+{
+    message Request
+	{
+	    required string uid = 1;
+	    optional string workspace_code = 2;
+	}
+	message Reply
+	{
+		required string uid = 1;
+		required Profile member = 2;
+		optional string workspace_code = 3;
+	}
+	extend comm.Reply { optional Reply ID = 130; }
+	enum Error
+    {
+        UID_INVALID = 1;
+        MEMBER_NOT_FOUND = 2;
+        WORKSPACE_CODE_NOT_MATCH = 3;
+    }
+}
+
+message RegisterV1 //HTTP
+{
+	message Request
+	{
+		required string tel = 1;
+		required string name = 2;
+		required string password = 3;
+		required string otp = 4;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 131; }
+	enum Error
+	{
+		OTP_NOT_MATCH = 1;
+		OTP_EXPIRED = 2;
+        NAME_SPECIAL_CHARACTERS_INVALID = 3;
+        NAME_TOO_LONG_INVALID = 4;
+        NAME_CONTAINS_PROVIDER_INVALID = 5;
+        PASSWORD_SHORT_INVALID = 6;
+        TEL_INVALID = 7;
+	}
+}
+
+message UpdateProfileV1
+{
+	message Request
+	{
+		required Profile profile = 1;
+	}
+	message Reply
+	{
+		required Profile profile = 1;
+	}
+	extend comm.Reply { optional Reply ID = 132; }
+	enum Error
+	{
+		NAME_SPECIAL_CHARACTERS_INVALID = 1;
+        NAME_TOO_LONG_INVALID = 2;
+        NAME_CONTAINS_PROVIDER_INVALID = 3;
+		ADDRESS_INVALID = 4;
+		GENDER_INVALID = 5;
+		DOB_INVALID = 6;
+		RELATIONSHIP_INVALID = 7;
+	}
+}
+
+message ListEmoji
+{
+	message Icon
+	{
+		required string url = 1;
+        required string id = 2;
+        optional string character = 3;  
+	}
+	message Emoji
+	{
+		required uint32 id = 1;
+		required string name = 2;
+        repeated Icon icons = 7;
+        optional bool is_default = 9;   // True if emoji is default sticker
+	}
+	message Request
+	{
+	}
+	message Reply
+	{
+        repeated Emoji emoji = 1;
+	}
+	extend comm.Reply { optional Reply ID = 133; }
+}
+
+message DeleteAccountV1 {
+	message Request {
+		required bytes user_id = 1;
+	}
+
+	message Reply {
+
+	}
+	extend comm.Reply { optional Reply ID = 134; }
+}
+
+message ReceiveDeleteAccount
+{
+	extend comm.Receive { optional ReceiveDeleteAccount RECEIVE_DELETE_ACCOUNT = 8; }
+}

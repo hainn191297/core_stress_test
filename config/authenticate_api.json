@@ -1,0 +1,5 @@
+{
+	"rsa_pub_key" : "cer/authen_pub_key.pem",
+	"rsa_priv_key" : "cer/authen_priv_key.pem",
+	"rsa_pub_key_vnpt" : "cer/authen_pub_key_vnpt.pem"
+}

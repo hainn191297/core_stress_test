@@ -1,0 +1,27 @@
+{
+	"min_version": [
+	  {
+		"android": "AND.1.0.0"
+	  },
+	  {
+		"ios": "iOS.1.0.0"
+	  }
+	],
+	"max_version": [
+	  {
+		"android": "AND.1.55.0"
+	  },
+	  {
+		"ios": "iOS.1.55.0"
+	  }
+	],
+	"whitelist_version": [
+	  "AND.2.0.0",
+	  "iOS.2.0.1"
+	],
+	"blacklist_version":[
+	  "AND.1.3.0",
+	  "iOS.1.0.8"
+	  ],
+	 "enable":0
+  }

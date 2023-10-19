@@ -1,0 +1,338 @@
+//syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [200-229]
+////receive: [30-39]
+
+message ReceiveContact
+{
+    extend comm.Receive { optional ReceiveContact RECEIVE_CONTACT = 30;}
+    required uint32 type = 1;
+    optional Contact contact = 2;
+    enum Type
+    {
+        ALL = 1;
+        ADD = 2;
+        UPDATE = 3;
+        REMOVE = 4;
+        BLOCK = 5;
+        UNBLOCK = 6;
+        BLOCKED = 7;
+        UNBLOCKED = 8;
+    }
+}
+
+message ListContacts
+{
+    message Request
+    {
+        required uint64 last_time = 1;
+    }
+    message Reply
+    {
+        repeated Contact contacts = 1;
+    }
+    extend comm.Reply { optional Reply ID = 200; }
+}
+
+message GetContact
+{
+    message Request
+    {
+        optional string tel = 1; /*for search */
+        optional bytes contact_id = 2;
+    }
+    message Reply
+    {
+        required Contact contact = 1;
+    }
+    extend comm.Reply { optional Reply ID = 201; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        ACCOUNT_NOT_EXISTS = 2;
+    }
+}
+
+message AddContact
+{
+    message Request
+    {
+        required string tel = 1;
+        required string name = 2;
+    }
+    message Reply
+    {
+        required Contact contact = 1;
+    }
+    extend comm.Reply { optional Reply ID = 202; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        NAME_INVALID = 2;
+    }
+}
+
+message RemoveContact
+{
+    message Request
+    {
+        required string tel = 1;
+    }
+    message Reply
+    {
+        required Contact contact = 1;
+    }
+    extend comm.Reply { optional Reply ID = 203; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+    }
+}
+
+message BlockContact
+{
+    message Request
+    {
+        required string tel = 1;
+        required bool is_block = 2;
+        optional bytes key = 3;
+    }
+    message Reply
+    {
+        required Contact contact = 1;
+    }
+    extend comm.Reply { optional Reply ID = 204; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+    }
+}
+
+message ImportContacts
+{
+    message Request
+    {
+        repeated Phonebook phonebooks = 1;
+    }
+
+    message Phonebook
+    {
+        required string name = 1;
+        required string tel = 2;
+    }
+
+    message Reply
+    {
+		repeated Contact contacts = 1;
+    }
+    extend comm.Reply { optional Reply ID = 205; }
+}
+
+message ListNearbyContacts
+{
+    message Request
+    {
+        optional uint32 gender = 1;
+        optional bool distance = 2;
+        optional bool active_time = 3;
+        optional uint32 min_age = 4;
+        optional uint32 max_age = 5;
+        optional bytes lower = 6;
+        optional bytes upper = 7;
+    }
+    message Reply
+    {
+        repeated Contact contacts = 1;
+        optional bytes lower = 2;
+        optional bytes upper = 3;
+    }
+
+    extend comm.Reply { optional Reply ID = 206; }
+}
+
+message UpdateContact
+{
+    message Request
+    {
+        required string tel = 1;
+        required string new_name = 2;
+    }
+    message Reply
+    {
+        required Contact contact = 1;
+    }
+    extend comm.Reply { optional Reply ID = 207; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+        NAME_INVALID = 2;
+    }
+}
+
+message UpdateLocation
+{
+    message Request
+    {
+        optional string key = 1;
+        required double latitude = 2;
+        required double longitude = 3;
+    }
+
+    message Reply
+    {
+        required string key = 1;
+    }
+
+    extend comm.Reply { optional Reply ID = 208; }
+}
+
+message ClearLocation
+{
+    message Request
+    {
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 209; }
+}
+
+message ListBlockedContacts
+{
+    message Request
+    {
+        optional string from = 1;
+        required uint32 count = 2;
+    }
+    message Reply
+    {
+        repeated Contact contacts = 1;
+    }
+    extend comm.Reply { optional Reply ID = 210; }
+}
+
+message InviteContact
+{
+    message Request
+    {
+        repeated string tels = 1;
+    }
+    message Reply
+    {
+    	required uint32 num_success = 1;
+    }
+    extend comm.Reply { optional Reply ID = 211; }
+    enum Error
+    {
+        TEL_INVALID = 1;
+    }
+}
+
+message ShakeFindFriend
+{
+	message Request
+	{
+		required double lat = 1;
+		required double lon = 2;
+	}
+	message Reply
+	{
+		repeated Contact contacts = 1;
+	}
+	extend comm.Reply { optional Reply ID = 212; }
+}
+
+message RequestDeleteAccount
+{
+    message Request
+    {
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 213; }
+    enum Error
+    {
+        EXCEED_TRY_TIMES_DELETE = 1;
+        ACCOUNT_TEMP_LOCKED = 2;
+    }
+}
+
+message DeleteAccount
+{
+    message Request
+    {
+	    required string password = 1;
+        required string otp = 2;
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 214; }
+    enum Error
+    {
+        PASSWORD_NOT_MATCH = 1;
+        OTP_NOT_MATCH = 2;
+        OTP_EXPIRED = 3;
+    }
+}
+
+message GetLastActiveTime
+{
+	message Request
+	{
+		required bytes uid = 1;
+	}
+	message Reply
+	{
+		required bytes uid = 1;
+		required uint64 last_active_time = 2;
+	}
+	extend comm.Reply { optional Reply ID = 215; }
+}
+
+message UserFeedback
+{
+	enum Type { MESSAGE = 0; PHOTO = 1; NEWSFEED = 2; SEARCH = 3; ANNOUNCEMENT = 4; COMMENT = 5; PRIVACY = 6; PLACE = 7; }
+	message Request
+	{
+		required uint32 type = 1;
+		required string content = 2;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 216; }
+}
+
+message GetPresentContact
+{
+	message Request
+	{
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 217; }
+}
+
+message ListContactsMyVNPT
+{
+    enum SORTOPTION
+    {
+       LAST_ACTIVE_TIME = 0;
+    }
+    message Request
+    {
+        required uint64 last_time = 1;
+        required uint64 sort_option = 2;
+        required  uint64 max_size = 3;
+    }
+    message Reply
+    {
+        repeated Contact contacts = 1;
+    }
+    extend comm.Reply { optional Reply ID = 218; }
+}

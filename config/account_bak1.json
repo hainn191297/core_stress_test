@@ -1,0 +1,13 @@
+{
+	"url_account" : "http://192.168.42.21:8085/ZootaPlusWallet/GetAccountBalance",
+	"url_subinfo" : "http://192.168.42.19:8083/ZootaPlusRating/GetSubInfo",
+	"url_transaction" : "http://192.168.42.21:8085/ZootaPlusWallet/GetEwalletHistory",
+	"url_subscribe" : "http://10.84.86.37:8080/WalaAdapterv2/RegisterRequest",
+	"url_sctopup" : "http://10.84.86.37:8085/ZootaPlusWallet/scTopup",
+	"url_dbtopup" : "http://10.84.86.37:8085/ZootaPlusWallet/dbTopup",
+	"shared_key" : "123456",
+	"operator" : "VNP",
+	"cpid" : "1",
+	"worker_count" : 4,
+	"queue_size" : 8192
+}

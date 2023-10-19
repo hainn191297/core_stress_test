@@ -1,0 +1,13 @@
+{
+	"url_vivas_account_provision" : "http://10.84.86.37:8080/WalaAdapterv2/RegisterRequest",
+	"url_register_sip_account" : "http://10.84.86.2:8668/activate",
+	"url_active_viettalk" : "http://ottsb.smt.ansv.vn:8668/actViettalk",
+	"url_deactive_viettalk" : "http://10.84.86.2:8668/deactViettalk",
+	"url_vivas_vnum_sync" : "http://10.84.86.37:8084/ZootaPlusProvisioning/updateVNumber",
+	"message_subs_register_success_default" : "Cám ơn bạn đã đăng ký sử dụng Ứng dụng liên lạc đa phương tiện VietTalk. Hãy sẵn sàng cho những trải nghiệm tuyệt vời cùng VietTalk. Xem chi tiết tại http://viettalk.vn",
+	"message_subs_register_success_vinaphone" : "Cám ơn bạn đã đăng ký sử dụng Ứng dụng liên lạc đa phương tiện VietTalk với các tính năng cơ bản. Bạn được miễn phí nhắn tin trong ứng dụng giữa người dùng VietTalk trực tuyến và miễn phí cước 3G khi sử dụng các tiện ích trong ứng dụng. Hãy sẵn sàng cho những trải nghiệm tuyệt vời cùng VietTalk. Xem chi tiết tại http://viettalk.vn",
+	"default_service_id" : "0",
+	"vnum_notice" : "Quý Khách được cấp số thuê bao +%s để nhắn tin và gọi điện từ VietTalk tới bạn bè không kết nối hoặc không sử dụng ứng dụng. Xin cám ơn!",
+	"worker_count" : 4,
+	"queue_size" : 10000
+}

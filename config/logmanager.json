@@ -1,0 +1,7 @@
+{
+	"elastic_url" : "http://vt2-beta-db:9200/",
+	"elastic_user" : "elastic",
+	"elastic_pwd" : "changeme",
+	"worker_count" : 4,
+	"queue_size" : 8192
+}

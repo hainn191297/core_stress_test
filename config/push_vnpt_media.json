@@ -1,0 +1,19 @@
+﻿{
+	"base_url" : "https://superapps.vnptvas.vn/app/ecosysapi/ott",
+	"authen_token" : "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJvdHRfc3RhZ2luZyIsInJvbGVzIjpbIk9UVF9CQUNLRU5EIl0sImp0aSI6IjU1MzNmMDcwLWExYzctNDExMy1hN2RmLTI0Mjg2YjAxYzE0MiIsImlhdCI6MTU5MjgyMDEyNCwiaXNzIjoiaHR0cHM6Ly92bnB0LnZuIn0.orirwrO8KPbeLs0tZOOZmKq4ifVD2apfGiYAA20BkdqfGM5_UdCjkgmq5tZAPufriotrL3vdhlQddy1w9omU9Em1XiHtizJayH9Gqz6bDUaBZusTu8zbXW77ymjrbdE3RvPNa44olNI-C4Pv5AIUtksgTPufvYQTLNh0f5vIJbQC8z73ozATxEu_mMBhkh6CsJvykzhVTsfAwBUOGsTk8Nu3MPjnieKkB5jvyCEUozSuc895MIJ8yG7JVch1okN2m39mIqoKBigZho00Nqx_cRl0d8wpvk8KlM1v5Z3zm7qAlpLsDIVfOzMwGP0Yma7HCjpD26xx6di14q98oPx_nA",
+	"push_sms_api" : "/send_sms",
+        "push_fcm_api" : "/send_firebase",
+        "push_apn_api" : "/send_apns",
+	"send_apn_call_api": "/send_push_call",
+	"invite_pattern" : "Một người bạn đang sử dụng %s mời bạn cùng tham gia. Hãy tải ứng dụng để cùng trò chuyện với bạn bè và trải nghiệm nhiều tiện ích từ dịch vụ.\nAndroid: %s\niOS: %s",
+	"invite_first_time_pattern" : "Bạn vừa nhận được tin nhắn từ người bạn đang sử dụng %s. Hãy tải ứng dụng để cùng trò chuyện với bạn bè và trải nghiệm nhiều tiện ích từ dịch vụ.\nAndroid: %s\niOS: %s",
+	"mms_pattern_active": "Bạn vừa nhận được một tin nhắn đa phương tiện mới. Hãy vào ứng dụng %s để xem!",
+	"mms_pattern_inactive" : "Bạn vừa nhận được một tin nhắn đa phương tiện từ người bạn đang sử dụng ứng dụng DigiLife. Hãy tải ứng dụng để xem nội dung và trải nghiệm nhiều tiện ích từ dịch vụ.\nAndroid: %s\niOS: %s",
+	"app_name": "DigiLife",
+	"app_link_ios": "https://bit.ly/digilifeios",
+	"app_link_android": "https://bit.ly/digilifeandroid",
+        "apn_cer_key" : "123456a@",
+        "apn_path_file" : "cer/vt2.product.pem",
+	"timeout" : 15,
+	"sms_count" : 1
+}

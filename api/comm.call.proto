@@ -1,0 +1,299 @@
+//syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [270-299]
+//receive: [40-49]
+
+message ReceiveNewCall
+{
+	extend comm.Receive { optional ReceiveNewCall NEW_CALL = 40;}
+	required int32 type = 1;
+	required uint64 time = 2;
+	required bytes call_id = 3;
+	required bytes caller_id = 4;
+	optional string caller_name = 5;
+	optional string caller_avatar = 6;
+	optional string caller_tel = 7;
+	optional string host = 8;
+	optional uint32 port = 9;
+}
+
+message ReceiveCallState
+{
+	enum Type {
+		CALL_ENDED = 1;
+		CALL_TIME_OUT = 2;
+
+		CALLEE_ACCEPTED = 3;
+		CALLEE_REJECTED = 4;
+		OTHER_CALLEE_ACCEPTED = 5;
+		OTHER_CALLEE_REJECTED = 6;
+
+		CALLER_CANCELED = 7;
+
+		KEEP_ALIVE = 8;
+	}
+	extend comm.Receive { optional ReceiveCallState CALL_STATE = 41;}
+
+	required bytes call_id = 1;
+	required uint32 type = 2;
+	optional string callee_session_id = 3;
+	optional uint32 sipcode = 4;
+}
+
+message ReceiveCallsStatus
+{
+	enum Type {
+		MARK_READ = 0;
+		CALL_FINISHED = 1;
+	}
+	extend comm.Receive { optional ReceiveCallsStatus CALLS_STATUS = 42;}
+	required uint32 type = 1;
+	optional bytes last_id = 2;
+}
+
+message ReceiveCallHistory
+{
+	extend comm.Receive { optional ReceiveCallHistory CALL_HISTORY = 43;}
+	required Call call = 1;
+}
+
+message ReceiveDelCallHistory
+{
+	extend comm.Receive { optional ReceiveDelCallHistory RECEIVE_DELCALL_HISTORY = 44;}
+	required string tel = 1;
+}
+
+message ReceiveDelListCallHistory
+{
+	extend comm.Receive { optional ReceiveDelListCallHistory RECEIVE_DELCALL_HISTORY = 45;}
+	repeated bytes call_id = 1;
+}
+
+message MakeCall
+{
+	message Request
+	{
+        required int32 type = 1;
+		optional bytes callee_id = 2;
+		optional string tel = 3;
+		optional string temp_phone = 4;
+		optional string workspace_code = 5;// not set if viettalk workspace
+	}
+	message Reply
+	{
+		required bytes call_id = 1;
+		optional string host = 2;
+		optional uint32 port = 3;
+		optional bytes callee_id = 4;
+		optional string callee_name = 5;
+		optional string callee_avatar = 6;
+		optional string callee_tel = 7;
+		optional uint32 callee_telco = 8;
+		optional string temp_phone = 9;
+		optional Chat chat = 10;/*for Desktop */
+	}
+	extend comm.Reply { optional Reply ID = 270; }
+	enum Error
+	{
+		CALLEE_BUSY = 1;
+		CALLER_BUSY = 2;
+		CALL_TYPE_INVALID = 3;
+		CALLEE_INVALID = 4;
+		TEL_INVALID = 5;
+		TEL_NOT_EXIST = 6;
+		CALLEE_NOT_AVAILABLE = 7;
+	}
+}
+
+message AcceptCall
+{
+	message Request
+	{
+		required bytes call_id = 1;
+		required string callee_session_id = 2;
+	}
+	message Reply
+	{
+		required bytes call_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 271; }
+	enum Error
+	{
+		CALL_INVALID = 1;
+	}
+}
+
+message EndCall
+{
+	enum type
+	{
+		CALL_END = 0;
+		CALL_TIME_OUT = 1;
+
+		CALLER_CANCEL = 2;
+
+		CALLEE_REJECT = 3;
+	}
+
+	message Request
+	{
+		optional uint32 type = 1;
+		optional bytes call_id = 2;
+		optional uint64 duration = 3;
+	}
+	message Reply
+	{
+		required bytes call_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 272; }
+	enum Error
+	{
+		CALL_INVALID = 1;
+		CALL_TYPE_INVALID = 2;
+	}
+}
+
+message KeepAliveCall
+{
+	message Request
+	{
+		required bytes call_id = 1;
+	}
+	message Reply
+	{
+		required bytes call_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 273; }
+	enum Error
+	{
+		CALL_INVALID = 1;
+	}
+}
+
+message ListCalls
+{
+	message Request
+	{
+		optional bytes last_id = 1;
+		optional uint32 max_size = 2 [default = 100];
+		optional string workspace_code = 3;// not set if viettalk workspace
+	}
+	message Reply
+	{
+		repeated Call calls = 1;
+		required bool too_long = 2;
+		optional uint32 unread_count = 3;
+	}
+	extend comm.Reply { optional Reply ID = 274; }
+}
+
+message ListHistoryCalls
+{
+	message Request
+	{
+		optional bytes last_id = 1;
+		optional uint32 max_size = 2 [default = 100];
+		optional string workspace_code = 3;// not set if viettalk workspace
+	}
+	message Reply
+	{
+		repeated Call calls = 1;
+	}
+	extend comm.Reply { optional Reply ID = 275; }
+}
+
+message MarkReadCalls
+{
+	message Request
+	{
+		optional bytes last_id = 1;
+		optional string workspace_code = 2;// not set if viettalk workspace
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 276; }
+}
+
+// NOT USE, use DelListCallHistory instead
+message DelCallHistory
+{
+	message Request
+	{
+		required string tel = 1;
+		optional string workspace_code = 2;// not set if viettalk workspace
+	}
+	message Reply
+	{
+		required string tel = 1;
+	}
+	extend comm.Reply { optional Reply ID = 277; }
+}
+
+message UpdateSipAccount
+{
+	message Request
+	{
+		required string user_name = 1;
+		required string password = 2;
+	    required string domain = 3;
+	}
+	message Reply
+	{
+		required string user_name = 1;
+		required string password = 2;
+	    required string domain = 3;
+	    required string proxy = 4;
+	}
+	extend comm.Reply { optional Reply ID = 278; }
+}
+
+message DelListCallHistory
+{
+	message Request
+	{
+		repeated bytes call_id = 1;
+	}
+	message Reply
+	{
+		repeated bytes call_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 279; }
+}
+
+message EndCallHttp
+{
+	enum type
+	{
+		CALL_END = 0;
+		CALL_TIME_OUT = 1;
+		CALLER_CANCEL = 2;
+		CALLEE_REJECT = 3;
+	}
+
+	enum Error
+	{
+		CALL_INVALID = 1;
+		CALL_TYPE_INVALID = 2;
+	}
+	
+	message Request
+	{
+		optional bytes user_id = 1;
+		optional bytes session_id = 2;
+		optional bytes call_id = 4;
+		optional uint32 end_type = 3;
+	}
+
+	message Reply
+	{
+		optional bytes call_id = 1;
+	}
+
+	extend comm.Reply 
+	{
+		optional Reply ID = 280;
+	}
+}

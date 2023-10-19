@@ -1,0 +1,14 @@
+{
+	"worker_count" : 4,
+	"queue_size" : 8192,
+	"fcm_api_key" : "AIzaSyAfHtqQscLBommR7dWvYGjjeA2pOc3-DZQ",
+	"fcm_post_url" : "https://fcm.googleapis.com/fcm/send",
+	"apn_development_url" : "https://api.development.push.apple.com",
+	"apn_production_url" : "https://api.push.apple.com",
+	"apn_cer_key" : "123456a@",
+	"apn_cer_voip_key" : "123456a@",
+	"apn_app_id" : "com.vivas.demoott",
+	"apn_path_file" : "cer/push_apn.pem",
+	"apn_path_voip_file" : "cer/push_apn_voip.pem",
+	"tel_apn" : ["84913081100", "84913610098", "84846861177", "84852384510", "84946572054", "84334936070", "84962531926", "84342250324", "84849750696", "84976668139", "84345352285", "84889656559", "84972321353", "84979440007"]
+}

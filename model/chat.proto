@@ -1,0 +1,329 @@
+syntax = "proto2";
+import "model.proto";
+import "comm.model.proto";
+package vt;
+
+message StickerTime
+{
+	optional uint32 id = 1;
+	optional uint64 time_download = 2;
+}
+message Reaction
+{
+	extend model.Entity	 { optional Reaction REACTION = 23; }
+	optional bytes chat_id = 1;
+	optional bytes message_id = 2;
+	optional uint64 react_time = 3;
+	optional bytes user_id = 4;
+	optional string emoji_id = 5;
+}
+
+message PinMessage
+{
+	extend model.Entity { optional PinMessage PIN_MESSAGE = 24; }
+	optional bytes chat_id = 1;
+	optional bytes message_id = 2;
+	optional bytes system_message_id = 3;
+	optional uint64 time = 4;
+
+}
+message User
+{
+    enum Type { ACTIVE = 0; INACTIVE = 1; BOT = 2; SYSTEM = 3; BANNED = 4; TEMP_LOCKED = 5; }
+	extend model.Entity	 { optional User USER = 4; }
+	required string tel = 1;
+	required uint32 type = 2;
+	required uint64 last_update = 3;
+	optional string name = 4;
+	optional string password = 5;
+	optional uint64 dob = 6;
+	optional string avatar = 7;
+	optional uint32 gender = 8;
+	optional string host = 9;
+	optional string vnum = 10;
+	optional string mood = 11;
+	optional string geohash = 12;
+    optional string cover = 13;
+    optional bytes last_seen_notification = 14;
+    optional string address = 15;
+    optional uint32 relationship = 16;
+    optional string user_description = 17;
+    optional uint32 num_invited = 18 [default = 0];
+    optional string reason_ban = 19;
+	optional string pass_chat = 20;
+
+    /* for sip*/
+    optional string sip_user_name = 21;
+    optional string sip_password = 22;
+    optional string sip_proxy = 23;
+    optional string sip_domain = 24;
+    optional uint64 sip_last_update = 25;
+    /* for sticker*/
+    optional bool has_default_sticker = 26;
+	repeated uint32 sticker_ids = 27;
+	
+	// For seeking chat
+	// optional uint32 chat_first_id = 28 [default = 0];
+	// optional uint32 chat_last_id = 29 [default = 0];
+
+	// For seeking call
+	// optional uint32 call_first_id = 30 [default = 0];
+	// optional uint32 call_last_id = 31 [default = 0];
+
+	// For seeking post
+	// optional uint32 post_first_id = 32 [default = 0];
+	// optional uint32 post_last_id = 33 [default = 0];
+	optional uint32 status_setting = 34 [default = 1];
+    repeated StickerTime sticker_collection = 35;
+	optional string custom_data = 36;
+}
+
+message VNum
+{
+    enum State { NON_ACTIVE = 0; ACTIVE = 1; LOCK_ONE_WAY = 2; LOCK_TWO_WAY = 3; DEACTIVE = 4;}
+    extend model.Entity	 { optional VNum VNUM = 11; }
+
+    required string vnum = 1;
+    required uint32 state = 2;
+    required uint64 time_modify_state = 3;
+    optional bytes user_id = 4;
+}
+
+message Session
+{
+	extend model.Entity	 { optional Session SESSION = 5; }
+
+	required bytes user_id = 1;
+	required uint32 platform = 2;
+	required uint64 expire = 3;
+	required uint64 last_active = 4;
+	optional string token = 5;
+	optional string token_voip = 6;
+	optional string platform_version = 7;
+	optional float screen_ratio = 8;
+	optional string device_name = 9;
+	optional string ip_peer = 10;
+	optional uint64 time_login = 11;
+	optional string platform_name = 12;
+	optional string app_version = 13;
+	optional string access_token = 14;
+	optional string api_version = 15;
+	optional double lat = 16; // HaiNN # Latitude for API Call Weather
+	optional double lon = 17; // HaiNN # Longtitude for API Call Weather
+}
+
+message Chat
+{
+	extend model.Entity	 { optional Chat CHAT = 6;}
+	
+
+	optional string name = 1;
+	optional string logo = 2;
+	required uint64 last_update = 3;
+	required uint32 type = 4;
+	optional bool noname = 5; /*for Group chat: name is set or not */
+	optional bool disable = 6 [default = false];
+	optional uint32 role = 7;/*role = NORMAL, SYSTEM...*/
+	optional string workspace_code = 8;
+
+	// For seeking user
+	// optional uint32 user_first_id = 9 [default = 0];
+	// optional uint32 user_last_id = 10 [default = 0];
+
+	// For seeking message
+	// optional uint32 message_first_id = 11 [default = 0];
+	// optional uint32 message_last_id = 12 [default = 0];
+	
+	// For id of peer chat
+	optional bytes creator_id = 13;
+	optional bytes member_id = 14; // only for peer
+	optional string custom_data = 15;
+    optional bytes owner_id = 16;
+    optional string permission_setting = 27;
+	optional uint64 time_created = 28;
+	optional string group_link = 29;
+	optional uint64 pin_time = 30;
+	optional bytes last_message = 31;
+}
+
+message Passcode
+{
+    enum Type { NONE = -1; REGISTRATION = 0; FORGOT_PASSWORD = 1; ACTIVE_ACCOUNT = 2; DELETE_ACCOUNT = 3;}
+	extend model.Entity	 { optional Passcode PASSCODE = 10;}
+
+	required string tel = 1;
+	optional string otp = 2;
+	required uint64 time = 3;
+    optional uint32 type = 4;
+	optional uint32 try_times = 5;
+	optional uint32 try_times_delete_account = 6 [default = 0];
+	optional uint64 time_temp_locked = 7;
+}
+
+message Message
+{
+	extend model.Entity	 { optional Message MESSAGE = 7;}
+	message UserAction
+	{
+		enum Action {DELETE = 0;}
+		enum ActionOption {ONLY_ME = 0; ALL = 1;}
+		required bytes user_id = 1;
+		required uint32 action = 2;
+		required uint32 action_option = 3;
+	}
+
+	enum ContentType{ NONE = 0; TEXT = 1; PHOTO = 2; VIDEO = 4; LINK = 8; FILE = 16; QUOTE = 32; STICKER = 64; ; VOICE = 128; CONTACT = 256; }
+
+	message ReactCount 
+	{
+		optional string emoji_id = 1;
+		optional uint32 emoji_count = 2;
+	}
+
+	message TargetID
+	{
+		repeated bytes id = 1;
+	}
+
+	enum Status { MSG_SENDING = 1; MSG_SENT = 2; MSG_DELIVERED = 4; MSG_SEEN = 8; MSG_SEND_ERROR = 16;}
+	
+	required uint32 state = 1;
+	required bytes sender = 2;
+	required uint64 time = 3;
+	required uint32 type = 4;
+	required uint32 smsout = 5;
+	optional bytes data = 6;
+	optional bytes ref_msg = 7;
+	repeated bytes uids = 8;
+	optional uint32 status = 9;
+	optional string temp_phone = 10;
+	optional bytes chat_id = 11;
+	repeated bytes history_id = 12;	// Store history message ids those are deleted / edited
+	repeated UserAction user_action = 13;
+	repeated comm.Member mentioned_member = 14; // use for memtion
+	optional string custom_data = 15;
+	repeated ReactCount react_count = 16; // use for react
+	optional uint64 pin_time = 17;
+  	optional uint64 last_update = 18;
+	optional uint32 content_type = 19;
+	repeated bytes uids_seen = 20;
+}
+
+message Call
+{
+	extend model.Entity	 { optional Call CALL = 9;}
+
+	required bytes caller_id = 1;
+	required bytes callee_id = 2;
+	required uint64 start_time = 3;
+	required int32 type = 4;
+	required uint64 duration = 5 [default = 0];
+	optional bool blocked = 6 [default = false];
+	optional string sip_call_id = 7;
+	optional string temp_phone = 8;
+	optional string workspace_code = 9;
+	optional uint32 call_class = 10;
+}
+
+message ShakeFriend
+{
+	extend model.Entity	 { optional ShakeFriend SHAKE_FRIEND = 12;}
+	required uint64 last_update = 1;
+	required double lat = 2;
+	required double lon = 3;
+}
+
+message Feedback
+{
+	enum Type { MESSAGE = 0; PHOTO = 1; NEWSFEED = 2; SEARCH = 3; ANNOUNCEMENT = 4; COMMENT = 5; PRIVACY = 6; PLACE = 7; }
+	extend model.Entity { optional Feedback FEEDBACK = 13;}
+	required bytes sender_id = 1;
+	required string content = 2;
+	required uint32 type = 3;
+	required uint64 time = 4;
+}
+
+message WorkSpace
+{
+	extend model.Entity { optional WorkSpace WORKSPACE = 14;}
+	required string code = 1;
+	optional string name = 2;
+	optional string description = 3;
+	optional string app_id = 4;
+}
+
+message HasChat
+{
+	enum State { NORMAL = 0; LEAVE = 1; DELETE_CONVERSATION = 2; }
+	extend model.Relation { optional HasChat HAS_CHAT = 6; }
+
+	required uint32 state = 1;
+	optional bytes last_seen = 2;
+	required uint64 join_time = 3;
+	optional uint64 sms_timeout = 4;
+	optional bytes last_delivered = 5;
+	optional bool sms_mode = 6;
+	optional string group_name = 7;//when leave, or removed then keep name of group at this time
+	optional string temp_phone = 8;
+	optional bool mark_unread = 9 [default = false];  
+	optional string name_in_workspace = 10;
+	optional bytes user_id = 11;
+	optional bytes chat_id = 12;
+	optional bool mute_chat = 13;
+	optional uint32 sms_out_count = 14 [default = 0];
+	optional string custom_data = 15;
+	optional uint64 message_start_time = 16;
+	optional uint64 pin_time = 17;
+	optional uint64 deletion_time = 18;
+	optional uint32 unread_message_count = 19; // HaiNN # for optimize
+	optional uint32 list_mention_count = 20; // HaiNN # for optimize
+}
+
+message RelateTo
+{
+	enum Type { VCONTACT = 0; PCONTACT = 1;}
+	extend model.Relation { optional RelateTo RELATE_TO = 7; }
+	enum RealtionStatus // User - contact
+	{
+		FOLLOWING	= 1;
+		FOLLOWED_BY	= 2;
+		BLOCK		= 4;
+	};
+	optional bytes owner_id = 1;
+	optional bytes friend_id = 2;
+	optional string alias = 3;
+	required uint32 type = 4;
+	required uint64 last_update = 5;
+	optional bool deleted = 6 [default = false];
+	optional uint32 relation_status = 7 [default = 0];
+	optional uint32 invite_times = 8 [default = 0];
+	optional string custom_data = 9;
+}
+
+message HasCall
+{
+	extend model.Relation { optional HasCall HAS_CALL = 8; }
+	optional bytes call_id = 1;
+	optional bytes user_id = 2;
+	optional bool has_seen = 3;
+}
+
+message InviteTo
+{
+	extend model.Relation { optional InviteTo INVITE_TO = 9; }
+	optional uint32 num_invite = 1;
+}
+
+message ChatUser
+{
+	extend model.Relation
+	{
+		optional ChatUser CHAT_USER = 12;
+	}
+	
+	optional bytes chat_id = 1;
+	optional bytes user_id = 2;
+	optional uint32 role = 3;
+	optional string custom_data = 4;
+	optional uint32 state = 5;
+}

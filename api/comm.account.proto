@@ -1,0 +1,291 @@
+//syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [240-269]
+
+message ReceiveGetAccount
+{
+    extend comm.Receive { optional ReceiveGetAccount RECEIVE_GET_ACCOUNT = 60;}
+    optional comm.GetAccount.Reply account_infor = 1;
+}
+
+message ReceiveListSubscription
+{
+    extend comm.Receive { optional ReceiveListSubscription RECEIVE_LIST_SUBSCRIPTION = 61; }
+    optional comm.ListSubscription.Reply subscriptions = 1;
+}
+
+message ReceiveListTransaction
+{
+    extend comm.Receive { optional ReceiveListTransaction RECEIVE_LIST_TRANSACTION = 62; }
+    optional comm.ListTransaction.Reply transactions = 1;
+}
+
+message ReceiveGetAccountUpdate
+{
+    extend comm.Receive { optional ReceiveGetAccountUpdate RECEIVE_GET_ACCOUNT_UPDATE = 63;}
+    optional comm.GetAccountUpdate.Reply account_infor = 1;
+}
+
+message ListSubscription
+{
+	message Subscription
+	{
+		optional uint32 sub_id = 1;
+		optional string code = 2;
+		optional string name = 3;
+		optional string service_name = 4;
+		optional string sub_description = 5;
+		optional string short_description = 6;
+		optional bool	active = 7 [default = false];
+		optional bool	sub = 8 [default = false];
+		optional bool	can_register_sub = 9 [default = true];
+	}
+	message Request
+	{
+	}
+	message Reply
+	{
+		repeated Subscription subscriptions = 1;
+	}
+	extend comm.Reply { optional Reply ID = 240; }
+}
+
+
+message ListTransaction
+{
+	enum Type { SC_TOPUP = 0; MINUS = 1; TKC = 2; DB_TOPUP = 3; }
+	enum Status { SUCCESS = 0; FAIL = 1; }
+	message ItemCall
+	{
+		optional string callee = 1;
+		optional uint32 duration = 2;
+	}
+	message ItemSms
+	{
+		optional string receiver = 1;
+		optional uint32 sms_count = 2;
+	}
+	message Transaction
+	{
+		optional double amount = 1;
+		optional uint64 created_time = 2;
+		optional uint32 type = 3;
+		optional uint32 status = 4;
+		optional string note = 5;
+		optional ItemCall item_call = 6;
+		optional ItemSms item_sms = 7;
+	}
+	message Request
+	{
+		required uint32 from_index = 1;
+		required uint32 to_index = 2;
+	}
+	message Reply
+	{
+		repeated Transaction transactions = 1;
+	}
+	extend comm.Reply { optional Reply ID = 241; }
+}
+
+message Subscribe
+{
+	enum Type { REGIS = 1; CANCEL = 2; }
+	message Request
+	{
+		required uint32 type = 1;
+		required uint32 service_id = 2;
+	}
+	message Reply
+	{
+		optional bool is_vinaphone = 1;
+	}
+	extend comm.Reply { optional Reply ID = 242; }
+	enum Error
+	{
+		ERROR_MONEY = 1;
+		ERROR_SERVER = 2;
+	}
+}
+
+message Topup
+{
+	enum Type { SC = 0; DB = 1; }
+	message Request
+	{
+		required uint32 type = 1;
+		optional string serial = 2;
+		optional string pin = 3;
+		optional uint64 price = 4;
+		optional string otp = 5;
+	}
+	message Reply
+	{
+	    optional double balance = 1;
+		optional double amount = 2;
+	}
+	extend comm.Reply { optional Reply ID = 243; }
+	enum Error
+	{
+	    VT_ERROR = 1;
+		UNAUTORIZED = 3;
+		TEL_NOT_EXISTS_PASSCODE = 4;
+		OTP_NOT_MATCH = 5;
+		OTP_EXPIRED = 6;
+		ACCOUNT_NOTFOUND = 201;
+		NOT_ENOUGH_MONEY = 202;
+		NOK_USED_CARD = 301;
+		NOK_EXPIRED_CARD = 302;
+		NOK_INACTIVATED_CARD = 303;
+		NOK_INVALID_SERIAL = 304;
+		NOK_INVALID_CARD = 305;
+	}
+}
+
+message GetAccount
+{
+	message CurrentService
+	{
+		optional uint32 sub_id = 1;
+		optional string sub_code = 2;
+		optional string sub_name = 3;
+		optional string service_name = 4;
+		optional string account_description = 5;
+		optional string short_description = 6;
+        optional bool sub = 7 [default = false];
+        optional bool can_register_sub = 8 [default = true];
+	}
+
+	message Request
+	{
+	}
+	message Reply
+	{
+		optional double credit = 1;
+		optional uint32 free_internal_sms = 2;
+		optional uint32 free_internal_call = 3;
+		optional uint32 free_external_sms = 4;
+		optional uint32 free_external_call = 5;
+		optional uint32 free_mix_sms = 6;
+		optional uint32 free_mix_call = 7;
+		optional uint32 sub_active_code = 8;
+		optional uint64 sub_start_date = 9;
+		optional uint64 sub_end_date = 10;
+		optional uint32 sub_status = 11;
+		optional CurrentService current_service = 12;
+	}
+	extend comm.Reply { optional Reply ID = 244; }
+	enum Error
+	{
+		VT_ERROR = 1;
+	}
+}
+
+message GetScTopupInfo
+{
+	message Request
+	{
+	}
+	message Reply
+	{
+		required bool active_sctopup = 1;
+		optional string guide = 2;
+	}
+	extend comm.Reply { optional Reply ID = 245; }
+}
+/*FOR VNPT PAYMENT*/
+message ListCardValue
+{
+	message Price
+	{
+		required uint32 value = 1;
+		optional string confirm = 2;
+	}
+	message Request
+	{
+	}
+	message Reply
+	{
+		repeated Price values = 1;
+		optional string note = 2;
+	}
+	extend comm.Reply { optional Reply ID = 246; }
+}
+
+message GetUrlVnptPay
+{
+	message Request
+	{
+		required uint32 amount = 1;
+	}
+	message Reply
+	{
+		required string url = 1;
+	}
+	extend comm.Reply { optional Reply ID = 247; }
+}
+message GetAccountUpdate
+{
+	message CurrentService
+	{
+		optional uint32 sub_id = 1;
+		optional string sub_code = 2;
+		optional string sub_name = 3;
+		optional string service_name = 4;
+		optional string account_description = 5;
+		optional string short_description = 6;
+        optional bool sub = 7 [default = false];
+        optional bool can_register_sub = 8 [default = true];
+	}
+
+	message Request
+	{
+	}
+	message Reply
+	{
+		optional double credit = 1;
+		optional string free_internal_sms = 2;
+		optional string free_internal_call = 3;
+		optional string free_external_sms = 4;
+		optional string free_external_call = 5;
+		optional string free_mix_sms = 6;
+		optional string free_mix_call = 7;
+		optional uint32 sub_active_code = 8;
+		optional uint64 sub_start_date = 9;
+		optional uint64 sub_end_date = 10;
+		optional uint32 sub_status = 11;
+		optional CurrentService current_service = 12;
+		optional string data_volume = 13;
+	}
+	extend comm.Reply { optional Reply ID = 248; }
+	enum Error
+	{
+		VT_ERROR = 1;
+		EWALLET_NOTFOUND = 2;
+	}
+}
+
+
+message GetPromotionInfo
+{
+	enum Status { INACTIVE = 0; ACTIVE = 1; }
+	message Info
+	{
+		optional string promotion_code = 1;
+		optional uint64 expired = 2;
+		optional uint32 free_internal_sms = 3;
+		optional uint32 free_internal_call = 4;
+		optional uint32 free_external_sms = 5;
+		optional uint32 free_external_call = 6;
+	}
+	message Request
+	{
+	}
+	message Reply
+	{
+		required uint32 status = 1;
+		optional Info info = 2;
+	}
+	extend comm.Reply { optional Reply ID = 249; }
+}

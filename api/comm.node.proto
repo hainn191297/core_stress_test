@@ -1,0 +1,58 @@
+// comm.node.proto
+
+package comm;
+
+message PushNode
+{
+	required uint64 id = 1000;		// push type : push, push_only,...
+	required bytes user_id = 1;	// user id
+	required bytes data = 2;		// comm::Receive
+	required uint32 data_type = 3;	// type of push data
+	optional bytes extra_data = 4;	// extra data depending on specific push
+}
+
+message SendSMSNode
+{
+	required uint64 id = 1001;		// push type: send_sms
+	required bytes user_id = 1;	// user id
+	required int32 type = 2;
+	required bytes chat_id = 3;	
+	required bytes message_id = 4;
+	required bytes sender_id = 5;
+	required bytes receiver_id = 6;
+	required uint64 time = 7;
+	required bytes session_id = 8;
+}
+
+message SynSessionNode
+{
+	enum Action
+	{
+		ADD = 0;
+		DEL = 1;
+	}
+	required uint64 id = 1002;		// push type: syn_node
+	required bytes user_id = 1;
+	required string node_id = 2;
+	required bytes session_id = 3;
+	required int32 action = 4;
+}
+
+message SynCallNode
+{
+	enum SyncType
+	{
+		MAKE_CALL = 0;
+		ACCEPT_CALL = 1;
+		END_CALL = 2;
+	}
+	required uint64 id = 1003;		// push type: SyncCallNode
+	required int32 sync_type = 1;	// Make call - 0 / Accept call - 1 / End call - 2
+	required bytes call_id = 2;
+	optional int32 call_type= 3;
+	optional uint64 call_time = 4;
+	optional bytes caller_id = 5;
+	optional bytes caller_session_id = 6;
+	optional bytes callee_id = 7;
+	optional bytes callee_session_id = 8;
+}

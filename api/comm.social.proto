@@ -1,0 +1,399 @@
+//syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+// 300 -> 350
+// receive 50 -> 55
+/* PROTOCOL */
+
+
+message ReceiveNotification
+{
+    extend comm.Receive { optional ReceiveNotification RECEIVE_NOTIFICATION = 50;}
+    required uint32 type = 1;
+    optional Notification notification = 2;
+    enum Type
+    {
+        MARK_SEEN_NOTIFICATION = 1;
+        LIKE = 2;
+        COMMENT = 3;
+        FOLLOW_POST = 4;
+        FOLLOW_USER = 5;
+        SHARE = 6;
+    }
+}
+
+message ListNewsFeed
+{
+	message Request
+	{
+		optional bytes begin_key = 1;
+		optional bytes end_key = 2;
+		optional uint32 size = 3 [default = 10];
+	}
+	message Reply
+	{
+		repeated Post posts = 1;
+		optional bool end = 2 [default = false];
+	}
+	extend comm.Reply { optional Reply ID = 300; }
+}
+
+message ListHomePagePost
+{
+	message Request
+	{
+		optional bytes user_id = 1;
+		optional bytes begin_key = 2;
+		optional bytes end_key = 3;
+		optional uint32 size = 4 [default = 10];
+	}
+	message Reply
+	{
+		repeated Post posts = 1;
+		optional bool end = 2 [default = false];
+	}
+	extend comm.Reply { optional Reply ID = 301; }
+}
+
+message ListComment
+{
+	message Request
+	{
+		required bytes post_id = 1;
+		optional bytes last_comment_id = 2;
+		optional uint32 size = 3 [default = 10];
+	}
+	message Reply
+	{
+		required bytes post_id = 1;
+		repeated Comment comments = 2;
+		optional bool end = 3 [default = false];
+	}
+	extend comm.Reply { optional Reply ID = 302; }
+}
+
+message CreatePost
+{
+	message Request
+	{
+        optional string text = 1;
+        optional string place = 2;
+        optional uint32 privacy = 3;
+        optional double lon = 4;
+        optional double lat = 5;
+        optional uint64 client_id = 6;/*for IOS*/
+	}
+	message Reply
+	{
+		required Post post = 1;
+	}
+	extend comm.Reply { optional Reply ID = 303; }
+}
+
+message EditPost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+        optional string text = 2;
+        optional uint32 privacy = 3;
+        optional string place = 4;
+        optional double lat = 5;
+        optional double lon = 6;
+        repeated bytes image_ids = 7;// list of images to delete.
+	}
+	message Reply
+	{
+		required Post post = 1;
+	}
+	extend comm.Reply { optional Reply ID = 304; }
+}
+
+message DeletePost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+	}
+	message Reply
+	{
+		required bytes post_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 305; }
+}
+
+message LikePost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+		required bool like = 2;
+	}
+	message Reply
+	{
+		required bytes post_id = 1;
+		required bool like = 2;
+	}
+	extend comm.Reply { optional Reply ID = 306; }
+}
+
+message CommentPost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+		required string text = 2;
+	}
+	message Reply
+	{
+		required bytes post_id = 1;
+		required Comment comment = 2;
+	}
+	extend comm.Reply { optional Reply ID = 307; }
+}
+
+message DeleteComment
+{
+	message Request
+	{
+		required bytes post_id = 1;
+		required bytes comment_id = 2;
+	}
+	message Reply
+	{
+		required bytes post_id = 1;
+		required bytes comment_id = 2;
+	}
+	extend comm.Reply { optional Reply ID = 308; }
+}
+
+message ListNotification
+{
+	message Request
+	{
+        optional string from = 1;
+        required uint32 count = 2;
+	}
+	message Reply
+	{
+		repeated Notification notifications = 1;
+	}
+	extend comm.Reply { optional Reply ID = 309; }
+}
+
+message HiddenTimeline
+{
+	message Request
+	{
+		required bytes user_id = 1;
+		required bool hidden = 2;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 310; }
+}
+
+message FollowUser
+{
+	message Request
+	{
+		required bytes user_id = 1;
+		required bool follow = 2;
+	}
+	message Reply
+	{
+		required bytes user_id = 1;
+		required bool follow = 2;
+	}
+	extend comm.Reply { optional Reply ID = 311; }
+}
+
+message ReportPost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+        required string text = 2;
+	}
+	message Reply
+	{
+		required bytes post_id = 1;
+        required string text = 2;
+	}
+	extend comm.Reply { optional Reply ID = 312; }
+}
+
+message ReportUser
+{
+	message Request
+	{
+		required bytes user_id = 1;
+        required string text = 2;
+	}
+	message Reply
+	{
+		required bytes user_id = 1;
+        required string text = 2;
+	}
+	extend comm.Reply { optional Reply ID = 313; }
+}
+
+message ListAllImage
+{
+	message Request
+	{
+		optional bytes user_id = 1;
+		optional bytes last_image_id = 2;
+        optional uint32 size = 3;
+	}
+	message Reply
+	{
+		repeated Image images = 1;
+		optional bool end = 2;
+	}
+	extend comm.Reply { optional Reply ID = 314; }
+}
+
+message ListUserLike
+{
+	message Request
+	{
+		required bytes post_id = 1;
+	}
+	message Reply
+	{
+		message UserLike
+		{
+			required string user_name = 1;
+			optional string user_avatar = 2;
+		}
+		repeated UserLike users = 1;
+	}
+	extend comm.Reply { optional Reply ID = 315; }
+}
+
+message MarkSeenNotification
+{
+    message Request
+    {
+        required bytes last_seen = 1;
+    }
+    message Reply
+    {
+    }
+    extend comm.Reply { optional Reply ID = 316; }
+}
+
+message CountUnseenNotification
+{
+    message Request
+    {
+        optional uint32 max_count = 1;
+    }
+    message Reply
+    {
+        required uint32 number = 1;
+    }
+    extend comm.Reply { optional Reply ID = 317; }
+}
+
+message GetPost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+	}
+	message Reply
+	{
+		required Post post = 1;
+	}
+	extend comm.Reply { optional Reply ID = 318; }
+}
+
+message ChangeCover //FILE
+{
+	message Request
+	{
+		optional bytes user_id = 1;
+	}
+	message Reply
+	{
+		required string cover = 1;
+	}
+	extend comm.Reply { optional Reply ID = 319; }
+}
+
+message ListFollowing
+{
+	message Request
+	{
+		optional bytes last_id = 1;
+		optional uint32 size = 2 [default = 10];
+	}
+	message Reply
+	{
+		repeated Member members = 1;
+	}
+	extend comm.Reply { optional Reply ID = 320; }
+}
+
+message ListFollower
+{
+	message Request
+	{
+		optional bytes last_id = 1;
+		optional uint32 size = 2 [default = 10];
+	}
+	message Reply
+	{
+		repeated Member members = 1;
+	}
+	extend comm.Reply { optional Reply ID = 321; }
+}
+
+message SharePost
+{
+	message Request
+	{
+		required bytes post_id = 1;
+		optional string text = 2;
+		required uint32 privacy = 3;
+	}
+	message Reply
+	{
+		required Post post = 1;
+	}
+	extend comm.Reply { optional Reply ID = 322; }
+}
+
+message FollowPost
+{
+    message Request
+	{
+	    optional bytes post_id = 1;
+		optional bool is_follow = 2;
+	}
+	message Reply
+	{
+		optional bytes post_id = 1;
+		optional bool is_follow = 2;
+	}
+	extend comm.Reply { optional Reply ID = 323; }
+}
+
+message GetUserInfo
+{
+	message Request
+	{
+		optional bytes user_id = 1;
+	}
+	message Reply
+	{
+		optional bytes user_id = 1;
+		required Profile profile = 2;
+		optional bool follow = 3;
+	}
+	extend comm.Reply { optional Reply ID = 324; }
+}

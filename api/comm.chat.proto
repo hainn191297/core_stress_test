@@ -1,0 +1,515 @@
+//syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [140-169]
+//receive: [10-19] - [80-89]
+
+message ReceiveChat
+{
+	extend comm.Receive { optional ReceiveChat RECEIVE_CHAT = 10;}
+	required Chat chat = 1;
+	optional string user_push_name = 2;
+	repeated string user_removed_added_name = 3;
+}
+
+message ReceiveMembers
+{
+	extend comm.Receive { optional ReceiveMembers RECEIVE_MEMBERS = 11;}
+	enum Type{ UPDATE = 0; ADD = 1; REMOVE = 2; LEAVE = 3; JOIN = 4;}
+	required bytes chat_id = 1;
+	required uint32 type = 2;
+	optional string name = 3;
+	repeated Member members = 4;
+	optional string user_name = 5;
+	optional string user_avatar = 6;
+	optional string user_push_name = 7;
+	repeated string user_removed_added_name = 8;
+	optional uint64 last_update = 9;
+
+}
+
+message ReceiveDeleteConversation
+{
+	extend comm.Receive { optional ReceiveDeleteConversation RECEIVE_DELETE_CONVERSATION = 12;}
+	required bytes chat_id = 1;
+}
+
+message ReceivePassChat
+{
+	enum Type{ CREATE = 0; UPDATE = 1; DELETED = 2;}
+	extend comm.Receive { optional ReceivePassChat RECEIVE_PASS_CHAT = 13; }
+	required uint32 type = 1;
+	required string pass = 2;
+}
+
+message ReceivePrivateChat
+{
+	extend comm.Receive { optional ReceivePrivateChat RECEIVE_PRIVATE_CHAT = 14; }
+	required bytes chat_id = 1;
+	required bool is_private = 2;
+}
+
+message ReceiveTempPhoneChat
+{
+	extend comm.Receive { optional ReceiveTempPhoneChat RECEIVE_TEMPPHONE_CHAT = 15;}
+	required bytes chat_id = 1;
+	required string temp_phone = 2;
+}
+
+message ReceiveUpdateSmsMode
+{
+	extend comm.Receive { optional ReceiveUpdateSmsMode RECEIVE_UPDATE_SMSMODE = 16;}
+	required bytes chat_id = 1;
+	required bool auto_mode = 2;
+}
+
+message ReceiveChangeGroupAvatar
+{
+	extend comm.Receive { optional ReceiveChangeGroupAvatar RECEIVE_CHANGE_GROUP_AVTAR = 17;}
+	required bytes chat_id = 1;
+	required string avatar = 2;
+}
+
+message ReceiveBlockChat
+{
+	extend comm.Receive { optional ReceiveBlockChat RECEIVE_BLOCK_CHAT = 18;}
+	required bytes chat_id = 1;
+	required bool block = 2;
+	optional bool blocked = 3;
+}
+
+message ReceiveChangeGroupName
+{
+	extend comm.Receive { optional ReceiveChangeGroupName RECEIVE_CHANGE_GROUP_NAME = 19;}
+	required bytes chat_id = 1;
+	required string name = 2;
+}
+
+message ReceiveRemoveTempPhoneChat
+{
+	extend comm.Receive { optional ReceiveRemoveTempPhoneChat RECEIVE_REMOVE_TEMPPHONE_CHAT = 99;}
+	required bytes chat_id = 1;
+}
+
+message ReceiveMuteChat
+{
+	extend comm.Receive { optional ReceiveMuteChat RECEIVE_MUTE_CHAT = 100; }
+	required bytes chat_id = 1;
+	required bool is_mute = 2;
+}
+
+message ReceivePinChats
+{
+	extend comm.Receive { optional ReceivePinChats RECEIVE_PIN_CHATS = 101; }
+	repeated PinnedChat pinned_chat = 1;
+}
+
+message ListChats
+{
+	message Request
+	{
+		required uint64 last_time = 1;
+		optional string workspace_code = 2;// not set if viettalk workspace
+	}
+	message Reply
+	{
+		repeated Chat chats = 1;
+	}
+	extend comm.Reply { optional Reply ID = 140; }
+}
+
+message CreateChat
+{
+	message Request
+	{
+		repeated bytes members = 1; // create chat with uid
+        optional string tel = 2;// if create peer chat that user has not contact_id
+		repeated string tels = 3; 
+        optional string workspace_code = 4;// not set if viettalk workspace
+	}
+	message Reply
+	{
+		required Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 141; }
+}
+
+message ListMembers
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		repeated Member members = 2;
+	}
+	extend comm.Reply { optional Reply ID = 142; }
+}
+
+message AddMembers
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		repeated bytes user_ids = 2;
+		repeated string tels = 3;
+	}
+	message Reply
+	{
+		required Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 143; }
+}
+
+message RemoveMember
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bytes user_id = 2;
+	}
+	message Reply
+	{
+		required Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 144; }
+}
+
+message LeaveChat
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 145; }
+}
+
+message ChangeGroupName
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required string name = 2;
+	}
+	message Reply
+	{
+		required string name = 1;
+		required Message message = 2;
+	}
+	extend comm.Reply { optional Reply ID = 146; }
+}
+
+message UpdateSMSMode
+{
+    message Request
+    {
+        required bytes chat_id = 1;
+        required bool auto_mode = 2;
+    }
+    message Reply
+    {
+    	required bytes chat_id = 1;
+        required bool auto_mode = 2;
+    }
+    extend comm.Reply { optional Reply ID = 147; }
+}
+
+message DeleteConversation
+{
+	message Request
+	{
+		repeated bytes chat_id = 1;
+	}
+	message Reply
+	{
+		repeated bytes chat_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 148; }
+}
+
+message SettingPassChat
+{
+	enum Type{ CREATE = 0; UPDATE = 1; DELETED = 2;}
+	message Request
+	{
+		required uint32 type = 1;
+		required string pass = 2;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 149; }
+}
+
+message PrivateChat
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bool is_private = 2;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		required bool is_private = 2;
+	}
+	extend comm.Reply { optional Reply ID = 150; }
+}
+
+message SettingTempPhoneChat
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required string temp_phone = 2;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		required string temp_phone = 2;
+	}
+	extend comm.Reply { optional Reply ID = 151;}
+}
+
+message ChangeGroupAvatar //FILE
+{
+	message Request
+	{
+		optional bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		required string avatar = 2;
+	}
+	extend comm.Reply { optional Reply ID = 152; }
+}
+
+message RemoveTempPhoneChat
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 153; }
+}
+
+message MuteChat
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bool is_mute = 2;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		required bool is_mute = 2;
+	}
+	extend comm.Reply { optional Reply ID = 154; }
+}
+
+message MarkUnread
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 155; }
+}
+
+message CreateChatWorkspace
+{
+	enum Type { PEER = 0; GROUP = 1; }
+	message Request
+	{
+        repeated Profile profiles = 1; 
+        required string workspace_code = 2;
+        optional string group_name = 3;
+        required Type type = 4;
+        optional string note = 5;
+	}
+	message Reply
+	{
+		required Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 156; }
+}
+
+message AddMembersWorkspace
+{
+ 	message Request
+ 	{
+ 		required bytes chat_id = 1;
+ 		repeated Profile profiles = 2; 
+ 	}
+ 	message Reply
+ 	{
+ 		required Chat chat = 1;
+ 	}
+ 	extend comm.Reply { optional Reply ID = 157; }
+}
+
+message CreateChatMyVNPT
+{
+	message Request
+	{
+		repeated bytes members = 1; // create chat with uid
+        optional string tel = 2;
+		repeated string tels = 3;
+		optional string name = 4;
+	}
+	message Reply
+	{
+		required Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 158; }
+}
+
+message GetListChats
+{
+	message Request
+	{
+		required uint64 last_time = 1;
+		optional string workspace_code = 2;// not set if viettalk workspace
+		repeated bytes chat_id = 3;
+		
+	}
+	message Reply
+	{
+		repeated Chat chats = 1;
+	}
+	extend comm.Reply { optional Reply ID = 159; }
+}
+
+message UpdateMember
+{
+    message MemberAction
+    {
+        enum Action
+        {
+            ACTION_ADD = 1;
+            ACTION_REMOVE = 2;
+            ACTION_EDIT = 4;
+        }
+        optional int32 action   = 1; // Action for member (ADD/REMOVE/EDIT)
+        optional Member member  = 2;
+    }
+
+    message Request
+	{
+		optional bytes chat_id = 1;
+        repeated MemberAction member_action = 2;
+        optional uint64 time_updated = 3;
+	}
+
+	message Reply
+	{
+        optional bytes chat_id = 1;
+        repeated MemberAction member_action = 2;
+        optional uint64 time_updated = 3;     
+	}
+	extend comm.Reply { optional Reply ID = 160; }
+}
+
+message JoinChat
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		optional Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 161; }
+	enum Error
+	{
+		PERMISSION_INVALID = 1;
+	}
+}
+
+message UpdateChatPermission
+{
+	message Request
+	{
+		optional Chat chat = 1;
+	}
+	message Reply
+	{
+		optional Chat chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 162; }
+}
+
+message GetChats
+{
+	message Request
+	{
+		repeated bytes chat_id = 1;
+		optional uint64 last_time = 2;
+	}
+
+	message Reply
+	{
+		repeated Chat chats = 1;
+	}
+	extend comm.Reply { optional Reply ID = 163; }
+}
+
+message GetListMembers
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		repeated Member members = 2;
+	}
+	extend comm.Reply { optional Reply ID = 164; }
+}
+
+message PinChats
+{
+	message Request
+	{
+		repeated PinnedChat pinned_chat = 1;
+	}
+	message Reply
+	{
+		repeated PinnedChat pinned_chat = 1;
+	}
+	extend comm.Reply { optional Reply ID = 165; }
+}
+
+message GetChatsVer2
+{
+	message Request
+	{
+		repeated bytes chat_id = 1;
+		optional uint64 last_time = 2;
+	}
+
+	message Reply
+	{
+		repeated Chat chats = 1;
+	}
+	extend comm.Reply { optional Reply ID = 166; }
+}

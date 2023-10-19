@@ -1,0 +1,541 @@
+//syntax = "proto2";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+
+enum ResultType
+{
+	OK = 0;
+	REQUEST_INVALID = 1000;
+	SESSION_INVALID = 1001;
+	SESSION_EXPIRE = 1002;
+	SIZE_LIMITED = 1003;
+	DB_ERROR = 1004;
+	NO_CHANGED = 1005;
+	NETWORK_ERROR = 1006;
+	DATA_ERROR = 1007;
+	TEL_INVALID = 1008;
+	PERMISSION_INVALID = 1009;
+}
+
+enum Telco 
+{
+	UNKNOWN = 0;
+	MOBIFONE = 1;
+	VINAPHONE = 2;
+	VIETTEL = 3;
+	VIETNAMMOBILE = 4;
+	GTELMOBILE = 5;
+	INDOCHINATELECOM = 7;
+}
+
+
+message Reply
+{
+	required uint32 type = 1;
+	repeated Presence presences = 2;
+	optional uint64 time = 3;
+	extensions 4 to max;
+}
+
+message Receive
+{
+	optional uint64 time = 1;
+	optional string device_token = 2;
+	optional string device_token_voip = 3;
+	extensions 4 to max;
+}
+
+/* DATA MODEL */
+message Presence
+{
+	required bytes user_id = 1;
+	optional uint64 active_time = 2;
+}
+
+message PinnedChat
+{
+	required bytes chat_id = 1;
+	required uint64 pin_time =2; 
+}
+
+message PinnedMessage
+{
+	required bytes message_id = 1;
+	required uint64 pin_time =2; 
+}
+
+message Session
+{
+        enum Platform { BLACKBERRY_ = 0; IOS_ = 1; ANDROID_ = 2; WINPHONE_ = 3;
+                        MACX_ = 4; WINDOWS_ = 5; LINUX_ = 6; OTHER_ = 7; }
+        optional uint64 contacts_last_update = 1;
+        optional uint64 chats_last_update = 2;
+        optional uint64 calls_last_update = 3;
+        optional string image_base_url = 4;
+}
+
+message WorkSpace
+{
+	required string code = 1;
+	optional string name = 2;
+	optional string info = 3;
+}
+
+message Profile
+{
+	enum STATUS_SETTING {ONLINE = 1; OFFLINE = 2; DELETING = 3;}
+	optional string name = 1;				// display name
+	optional string avatar = 2;
+	optional string mood = 3;
+	optional string tel = 4;
+	optional uint32 telco = 5;
+	optional string address = 6;
+	optional uint64 dob = 7;
+	optional uint32 gender = 8;
+	optional string vnum = 9;
+    optional uint32 relationship = 10;
+    optional string cover = 11;
+    optional string profile_description = 12; // username
+	optional string pass_chat = 13;
+	optional uint32 status_setting = 14;
+}
+
+message Contact
+{
+	enum Gender { MALE = 0; FEMALE = 1; OTHERS = 2; }
+    enum Type{ NONE = 0; PCONTACT = 1; VCONTACT = 2; SYSTEM = 3; VT_USER = 4; NONE_VT_USER = 5;}
+    enum Relationship { NO_RELATIONSHIP = 0; MARRIED = 1; SEARCHING = 2; ALONE = 3; IN_A_RELATIONSHIP = 4;}
+	required bytes contact_id = 1;
+	required uint32 type = 2;
+	optional string name = 3;
+	optional string avatar = 4;
+	optional string mood = 5;
+	required string tel = 7;
+	optional uint32 telco = 8;
+	optional string address = 9;
+	optional uint64 dob = 10;
+	optional uint32 gender = 11;
+	optional float distance = 12;
+	optional bytes chat_id = 13;
+	optional uint64 active_time = 14;
+    optional bool block = 15;
+    optional bool blocked = 16;
+    optional uint32 relationship = 17;
+    optional bytes key_block = 18;
+    optional string cover = 19;
+    optional bool follow = 20;
+    optional bool hidden_timeline = 21;
+    optional string contact_description = 22;
+	optional bool deleted = 23;
+
+}
+
+message Member
+{
+    enum Role
+	{
+		ROLE_UNKNOWN	= 0;
+		ROLE_OWNER		= 1;
+		ROLE_ADMIN		= 2;
+		ROLE_MEMBER		= 4;
+	}
+    
+	required bytes member_id = 1;
+	optional string name = 2;
+	optional string avatar = 3;
+	optional uint64 last_seen = 4;
+	optional bool viettalk_user = 5 [ default = true ];
+	optional bool follow = 6;
+	optional string tel = 7;
+	optional uint32 telco = 8;
+	optional string user_name = 9;
+    optional uint32 role = 10;
+}
+
+message Chat
+{
+	enum Type { PEER = 0; GROUP = 1; OA =2; }
+	enum Role { NORMAL = 0; SYSTEM = 1; }
+    enum ChatPermissionIndex
+    {
+        CPI_CHANGE_NAME     = 0;    // "[1|2|..].."
+        CPI_CHANGE_AVATAR   = 1;    // "0,[1|2|..].."
+        CPI_SEND_MESSAGE    = 2;    // ...
+        CPI_ADD_MEMBER      = 3;    // ...
+        CPI_REMOVE_MEMBER   = 4;    // ...
+        CPI_HISTORY_NEW_MEMBER  = 5;    // ...
+        CPI_JOIN_BY_LINK    = 6;    // ...
+		CPI_PIN_MESSAGE   = 7;
+    }
+
+    enum ChatMemberPermissionValue
+    {
+        MPV_MEMBER_ALLOWED  = 1;    // Apply for CPI 0 -> 4 and 7
+        MPV_OWNER_ALLOWED   = 2;    // Apply for CPI 0 -> 4 and 7
+        MPV_ADMIN_ALLOWED   = 4;    // Apply for CPI 0 -> 4 and 7
+    }
+
+    enum ChatNewMemberPermissionValue
+    {
+        NMP_VISIBLE_HISTORY         = 1;    // Apply for CPI 5 -> 6
+        NMP_HIDDEN_HISTORY          = 2;    // Apply for CPI 5 -> 6
+        NMP_ENABLE_JOIN_BY_LINK     = 4;    // Apply for CPI 5 -> 6
+        NMP_DISABLE_JOIN_BY_LINK    = 8;    // Apply for CPI 5 -> 6
+    }
+
+	required bytes chat_id = 1;
+	required uint32 type = 2;
+	required string name = 3;
+	optional string avatar = 4;
+	required uint64 join_time = 6;
+	optional Message last_message = 10;
+	optional bool noname = 8;
+	repeated Member members = 9;
+	optional uint32 unread_count = 11;
+	optional bool blocked = 12 [default = false];
+	optional bool hide_chat = 13 [default = false];
+	optional bool auto_mode = 14 [default = false];
+	optional bool disable = 15 [default = false];
+	optional bool private_chat = 16 [default = false];
+	optional bool block = 17 [default = false];
+	optional string temp_phone = 18;
+	optional bool mute_chat = 19 [default = true];
+	optional uint32 role = 20 [default = 0];/*role = NORMAL, SYSTEM...*/
+	optional bool mark_unread = 21 [default = false];
+	optional string workspace_code = 22;
+	repeated bytes mentioned_member_id = 23;
+    optional bytes last_seen_message_id = 24;       // New api version >= 1.0.3
+    repeated bytes list_message_mention_id = 25;    // New api version >= 1.0.3
+    optional bytes owner_id = 26;
+    optional string permission_setting = 27;
+	optional uint64 last_update = 28;
+	optional string group_link = 29;
+	optional uint64 pin_time = 30;
+	optional uint32 list_mention_count = 31;  // List_mention_count for optimize 
+	optional uint64 deletion_time = 32;
+}
+
+message Call
+{
+	enum Type { A2A = 0; A2P = 1; P2A = 2; GROUP = 3;}
+	enum CallClass
+	{
+		UNKNOWN = 0;
+		ESTABLISHED = 1;
+		REJECTED = 2;
+		MISSED = 4;
+	}
+	
+	required bytes call_id = 1;
+	required bytes caller_id = 2;
+	optional string caller_name = 3;
+	optional string caller_avatar = 4;
+	optional string caller_tel = 5;
+	required bytes callee_id = 6;
+	optional string callee_name = 7;
+	optional string callee_avatar = 8;
+	optional string callee_tel = 9;
+	required uint64 start_time = 10;
+	required int32 type = 11;
+	required uint64 duration = 13 [default = 0];
+	optional bool seen = 14 [default = false];
+	optional string temp_phone = 15;
+	optional uint32 type_caller = 16;//Type{ NONE = 0; PCONTACT = 1; VCONTACT = 2; SYSTEM = 3; VT_USER = 4; NONE_VT_USER = 5;}
+	optional uint32 type_callee = 17;//Type{ NONE = 0; PCONTACT = 1; VCONTACT = 2; SYSTEM = 3; VT_USER = 4; NONE_VT_USER = 5;}
+	optional string workspace_code = 18;
+	optional uint32 call_class = 19;	// To classify missed call
+}
+
+message Message
+{
+	enum Type
+	{
+		NONE_TYPE = -1; TEXT = 0; PHOTO = 1; VOICE = 2; VIDEO = 3; LOCATION = 4; STICKER = 5; CONTACT = 6; FILE = 16;
+		CREATE_CHAT = 7; ADD_MEMBER = 8; REMOVE_MEMBER = 9; LEAVE_GROUP = 13; CREATE_GROUP = 15;
+		EDIT_MSG = 10; DELETE_MSG = 11; SEND_SMS = 12; CHANGE_NAME_GROUP = 14; CALL = 17; CHANGE_AVATAR_GROUP = 18; LINK = 19; QUOTE = 20; 
+		JOIN_GROUP_VIA_LINK = 21; FORWARD = 22; SYS_PIN= 23; WEATHER = 24;
+	}
+	enum State { NONE_STATE = -1; NORMAL = 0; EDITED = 1; DELETED = 2; EXPIRE = 3; PIN = 4;}
+	enum Sms { NONE = 0; PENDING = 1; SENT = 2; SMS_ERROR = 3;}
+	enum Status { MSG_SENDING = 0; MSG_SENT = 1; MSG_DELIVERED = 2; MSG_SEEN = 3; MSG_SEND_ERROR = 4;}
+	message UserAction
+	{
+		enum Action {DELETE = 0;}
+		enum ActionOption {ONLY_ME = 0; ALL = 1;}
+		required bytes user_id = 1;
+		required uint32 action = 2;
+		required uint32 action_option = 3;
+	}
+	message NestedMessage
+	{
+		repeated Message sub_message = 1;
+	}
+
+	message Reaction
+	{
+		required bytes user_id = 1;
+		required string emoji_id = 2;
+	}
+
+	message CustomData
+	{
+		enum Type {NONE = 0; REACT = 1;};
+		required uint32 custom_data_type = 1;
+		repeated Reaction reaction = 2;
+	}
+	message ReactCount
+	{
+		required string emoji_id = 1;
+		required uint32 emoji_count = 2;
+	}
+
+	required bytes message_id = 1;
+	required bytes chat_id = 2;
+	required Member sender = 3;
+	required uint64 time = 4;
+	required uint32 type = 5;
+	required uint32 smsout = 6;
+	required uint32 state = 7;
+	required bytes data = 8;
+	optional bytes ref_msg = 9;
+	optional uint32 status = 10;
+	optional string temp_phone = 11;
+	repeated UserAction user_action = 12;// use for delete message
+	repeated Member mentioned_member = 13; // use for memtion
+	optional uint64 pin_time = 14;
+	optional CustomData custom_data = 15;
+	optional uint64 last_update_time = 16;
+	repeated ReactCount react_count = 17;
+	// repeated Member target_member =14;
+	repeated UserSeen user_seen = 18;
+	optional uint32 user_seen_count = 19;
+}
+
+message TextMessage
+{
+	required string text = 1;
+	optional bool has_emoticon = 2;
+	optional bool has_link = 3;
+}
+
+message PhotoMessage
+{
+	required uint64 size = 1;
+	optional uint32 width = 2;
+	optional uint32 height = 3;
+	optional string url = 4;
+	optional string thumbnail = 5;
+	optional string name = 6;
+}
+
+message FileMessage
+{
+	enum Type
+	{
+		ZIP = 0; IMAGE = 1; PDF = 2; EXCEL = 3; WORD = 4; DEFAULT = 5; VIDEO = 6;
+	}
+	required uint64 size = 1;
+	required uint32 type = 2;
+	optional string url = 3;
+	optional string name = 4;
+	optional string mime_type = 5;
+}
+
+message LinkMessage
+{
+	required string url = 1;
+	optional string url_title = 2;
+	optional string url_thumb = 3;
+	optional string url_description = 4;
+}
+
+message StickerMessage
+{
+	required string url = 1;
+	required bool animation = 2 [default = false];
+	optional string uri = 3;
+	required uint32 package_id = 4;
+	optional uint32 frame_row_count = 5;
+	optional uint32 frame_col_count = 6;
+	optional uint32 frame_rate = 7;
+    optional uint32 frame_count = 8;
+    optional uint32 width = 9;
+    optional uint32 height = 10;
+}
+
+message VoiceMessage
+{
+	required uint64 size = 1;
+	required uint32 duration = 2;
+	optional string url = 3;
+	optional string name = 4;
+}
+
+message LocationMessage
+{
+	required double lon = 1;
+	required double lat = 2;
+	optional string place_id = 3;
+	optional string place = 4;
+	optional string title = 5;
+}
+
+message ContactMessage
+{
+	message BusinessContact
+	{
+		required string name = 1;
+		required string tel = 2;
+		optional string avatar = 3;
+		required bool viettalk_user = 4;
+		optional bytes contact_id = 5;
+	}
+	repeated BusinessContact contacts = 1;
+}
+
+message QuoteMessage
+{
+	required Message quote = 1;
+	required Message new = 2;
+}
+
+// OA message
+message OaHeader {
+	optional string theme = 1;  // background header
+	optional string header_top = 2; 
+	optional string header_mid = 3; 
+	optional string header_bot = 4; 
+	optional string icon = 5;   
+}
+
+message OaBody {
+	optional string content = 1; 
+	optional string link = 2;
+}
+message OaMessage
+{
+	// header 
+	optional OaHeader header = 1; 
+	// body
+	optional OaBody body = 2;  
+}
+
+message Post
+{
+	enum State { NORMAL_ = 0; EDITED = 1; DELETED = 2; EXPIRE = 3; }
+	enum Privacy { PUBLIC = 0; ONLY_ME = 1; }
+	enum Type { NORMAL = 0; SHARE = 1; CHECK_IN = 2;}
+	required bytes post_id = 1;
+	required Member sender = 2;
+	required uint32 type = 3;// normal or share
+	required uint64 time = 4;
+	required uint32 state = 5;
+	optional uint32 like_count = 6;
+	optional uint32 comment_count = 7;
+	optional string text = 8;
+	repeated Image images = 9;
+	optional string place = 10;
+	optional Comment last_comment = 11;
+	optional bool liked = 12 [default = false];
+	optional uint32 privacy = 13;
+	optional bytes fake_id = 14;
+	optional bytes share_post_id = 15;
+	optional string share_text = 16;
+	optional Member user_share = 17;
+	optional bool follow = 18 [default = false];
+	optional uint32 share_count = 19;
+	optional double lon = 20;
+	optional double lat = 21;
+	optional uint64 share_time = 22;
+	optional uint32 share_privacy = 23;
+	optional uint64 client_id = 24;/*for ios */
+}
+
+message CallMessage
+{
+	enum Type { A2A = 0; A2P = 1; P2A = 2; GROUP = 3; }
+    required bytes caller_id = 1;
+    required bytes callee_id = 2;
+    required uint32 type = 3;
+    optional uint64 duration = 5;
+    optional string temp_phone = 6;
+}
+
+message Comment
+{
+	required bytes comment_id = 1;
+	required Member sender = 2;
+	required string text = 3;
+	required uint64 time = 4;
+}
+
+message Image
+{
+	required bytes image_id = 1;
+	required string url = 2;
+	optional string thumb_nail = 3;
+	optional uint32 size = 4;
+	optional uint32 width = 5;
+	optional uint32 height = 6;
+	optional bytes post_id = 7;
+}
+
+message Notification
+{
+	enum Type { LIKE = 0; COMMENT = 1; FOLLOW_USER = 2; FOLLOW_POST = 3; SHARE = 4; }
+	required bytes notification_id = 1;
+	required uint32 type = 2;
+	required Member source = 3;
+	required bytes user_id = 4;
+	required string data = 5;
+	required uint64 time = 6;
+    optional bool unseen = 7;
+	optional bytes ref_id = 8;/*COMMENT, LIKE, FOLLOW_POST, SHARE --> ref_id is post_id, || FOLLOW_USER --> ref_id is contact_id */
+    optional bytes key_notification = 9;
+}
+
+/* model for my number */
+message Tariff
+{
+	required uint32 id = 1;
+	required uint32 price = 2;
+	required uint32 duration = 3;
+	required string description = 4;
+}
+
+message NumberStore
+{
+	required string number = 1;
+	required Tariff tariff = 2;
+}
+
+message MyNumber
+{
+	required string phone = 1;
+	required string number = 2;
+	optional string alias = 3;
+	required uint32 status = 4;
+	required Tariff tariff = 5;
+	required bool is_default = 6;
+	required uint64 create_date = 7;
+	required uint64 expire_date = 8;
+}
+
+message VideoMessage
+{	
+	required uint64 size = 1;	// size of video
+	required uint32 duration = 2;	// video duration
+	optional string url = 3;	// video storage path
+	optional string thumbnail = 4;	// video thumbnail image path
+	optional string name = 5;	// video origin name
+	optional string name_thumbnail = 6; // thumbnail name
+	optional uint32 width = 7;     // width of thumbnail
+	optional uint32 height = 8;    // height of thumbnail
+}
+
+message UserSeen
+{
+	required string name = 1;
+	required string avatar = 2;
+	required bytes user_id  = 3;
+}

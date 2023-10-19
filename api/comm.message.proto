@@ -1,0 +1,530 @@
+//syntax = "proto2";
+import "comm.model.proto";
+package comm;
+//option optimize_for = LITE_RUNTIME;
+//ID: [170-199]
+//receive: [20-29]
+
+message ReceiveTyping
+{
+	extend comm.Receive { optional ReceiveTyping RECEIVE_TYPING = 20;}
+	required bytes chat_id = 1;
+	required bytes user_id = 2;
+	required string user_name = 3;
+}
+
+message ReceiveRead
+{
+	message ReadMessage
+	{
+		required bytes message_id = 1;
+		optional uint64 message_time = 2;
+	}
+	extend comm.Receive { optional ReceiveRead RECEIVE_READ = 21;}
+	required bytes chat_id = 1;
+	required bytes user_id = 2;
+	required bytes message_id = 3;      // To support old api version
+	optional uint64 message_time = 4;   // To support old api version
+    repeated ReadMessage read_messages = 5; // Api version >= 1.0.3 only
+}
+
+message ReceiveMessage
+{
+	extend comm.Receive { optional ReceiveMessage RECEIVE_MESSAGE = 22;}
+	required Message message = 1;
+	optional string user_push_name = 2;
+}
+
+message ReceiveDelivered
+{
+	extend comm.Receive { optional ReceiveDelivered RECEIVE_DELIVERED = 23;}
+	required bytes chat_id = 1;
+	required bytes user_id = 2;
+	required bytes message_id = 3;
+	optional uint64 message_time = 4;
+}
+
+message ReceiveReadAll
+{
+	extend comm.Receive { optional ReceiveReadAll RECEIVE_READ_ALL = 24;}
+	required bytes chat_id = 1;
+	required bytes user_id = 2;
+}
+
+message ReceiveListMessage
+{
+	enum Flag { NONE = 0; DELTE_ALL = 1; UNPIN_ALL = 2;}
+	extend comm.Receive { optional ReceiveListMessage RECEIVE_LIST_MESSAGE = 25;}
+	repeated Message message = 1;
+	optional uint32 flag = 2;
+	optional bytes chat_id = 3;
+}
+
+message ListMessage
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		optional bytes message_id = 2;
+	}
+	message Reply
+	{
+		repeated Message messages = 1;
+		required bool too_long = 2;
+		required bytes chat_id = 3;
+	}
+	extend comm.Reply { optional Reply ID = 170; }
+}
+
+message ListHistory
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bytes message_id = 2;
+		optional uint32 count = 3;
+	}
+	message Reply
+	{
+		repeated Message messages = 1;
+	}
+	extend comm.Reply { optional Reply ID = 171; }
+}
+
+message MarkRead
+{
+    enum ReadOption
+    {
+        EXACTLY = 1;    // Read the given message id(s)
+        FROM_TO = 2;    // Read messages in range [FROM, TO]
+        ALL     = 4;
+        DESC    = 8;    // Read by milestone FROM to older
+        ASC     = 16;   // Read by milestone FROM to newer
+    }
+    
+    enum RangeOption
+    {
+        LEFT_EXCLUSIVE  = 1;
+        RIGHT_EXCLUSIVE = 2;
+    }
+
+	message Request
+	{
+		required bytes chat_id = 1;
+        required bytes message_id = 2;      // Support old api version
+        repeated bytes message_ids = 3;     // Api version >= 1.0.3 only
+        optional int32 read_option = 4;     // Api version >= 1.0.3 only
+        optional int32 range_option = 5;    // Api version >= 1.0.3 only
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		required bytes message_id = 2;  // Support old api version
+		repeated bytes message_ids = 3; // Api version >= 1.0.3 only
+        optional int32 read_option = 4; // Api version >= 1.0.3 only
+		optional int32 unread_count = 5;
+	}
+	extend comm.Reply { optional Reply ID = 172; }
+}
+
+message SendMessage
+{
+	message Request
+	{
+		required Message message = 1;
+		optional string tel = 2;
+	}
+	message Reply
+	{
+		required Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 173; }
+}
+
+message SendTyping
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 174; }
+}
+
+message UploadPhoto
+{
+	message Request
+	{
+		required Message message = 1;
+	}
+	message Reply
+	{
+		required Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 175; }
+}
+
+message UploadFile
+{
+	message Request
+	{
+		required Message message = 1;
+	}
+	message Reply
+	{
+		required Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 176; }
+}
+
+message DeleteMessage
+{
+	message MessageAction
+	{
+		required bytes message_id = 1;
+		required uint32 action_option = 2;
+	}
+	message Request
+	{
+		required bytes chat_id = 1;
+		repeated MessageAction message_actions = 2;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		repeated MessageAction message_actions = 2;
+	}
+	extend comm.Reply { optional Reply ID = 177; }
+}
+
+message EditMessage
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bytes message_id = 2;
+		required bytes data = 3;
+		optional Message message = 4;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		required bytes message_id = 2;
+		required bytes data = 3;
+		optional Message message = 4;
+	}
+	extend comm.Reply { optional Reply ID = 178; }
+}
+
+message UploadVoice
+{
+	message Request
+	{
+		required Message message = 1;
+	}
+	message Reply
+	{
+		required Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 179; }
+}
+
+message SendSystemMessage
+{
+	message Request
+	{
+		required uint32 type = 1;
+		required uint64 time = 2;
+		required bytes data = 3;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 180; }
+}
+
+message SendSMSOutManual
+{
+    message Request
+    {
+        required bytes chat_id = 1;
+        required bytes message_id = 2;
+    }
+    message Reply
+    {
+    	required bytes chat_id = 1;
+        required bytes message_id = 2;
+    }
+    extend comm.Reply { optional Reply ID = 181; }
+}
+
+message MarkDelivered
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+        required bytes message_id = 2;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 182; }
+}
+
+message MarkReadAll
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+	}
+	extend comm.Reply { optional Reply ID = 183; }
+}
+
+message ForwardFile
+{
+	message Request
+	{
+		required bytes msg_id = 1;
+		repeated bytes receivers = 2;
+		repeated bytes group_ids = 3;
+		optional string caption = 4;
+		optional bytes chat_id_from = 5;
+	}
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 184; }
+}
+
+message ShareText
+{
+	message Request
+	{
+		required Message message = 1;
+		repeated bytes receivers = 2;
+		repeated bytes chat_ids = 3;
+	}
+	
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 185; }
+}
+
+message ShareLink
+{
+	message Request
+	{
+		required Message message = 1;
+		repeated bytes receivers = 2;
+		repeated bytes chat_ids = 3;
+	}
+	
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 186; }
+}
+
+message ShareImage
+{
+	message Request
+	{
+		required Message message = 1;
+		repeated bytes receivers = 2;
+		repeated bytes chat_ids = 3;
+		optional string caption = 4;
+	}
+	
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 187; }
+}
+
+message ShareFile
+{
+	message Request
+	{
+		required Message message = 1;
+		repeated bytes receivers = 2;
+		repeated bytes chat_ids = 3;
+		optional string caption = 4;
+	}
+	
+	message Reply
+	{
+	}
+	extend comm.Reply { optional Reply ID = 188; }
+}
+
+message SendMediaMessage
+{
+	message Request
+	{
+		required Message message = 1;
+	}
+	message Reply
+	{
+		required Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 189; }
+}
+
+message GetListMessage
+{
+	enum Direction{ DESC = 0; ASC = 1; CENTER = 2;}
+	message Request
+	{
+		required bytes chat_id = 1;
+		optional bytes message_id = 2;
+		optional uint32 message_number = 3;
+		required uint32 direction = 4;
+		optional uint32 type = 5;
+		optional uint32 state = 6;
+	}
+	message Reply
+	{
+		repeated Message messages = 1;
+		required bytes chat_id = 3;
+	}
+	extend comm.Reply { optional Reply ID = 190; }
+}
+
+message UploadMultiMedia
+{
+    message Request
+    {
+        repeated Message list_message = 1;
+    }
+    message Reply
+    {
+        repeated Message list_message = 1;
+    }
+    extend comm.Reply { optional Reply ID = 191; }
+}
+
+message PinMessages
+{
+	enum Flag { NONE = 0; UNPIN_ALL = 1;}
+	message Request
+	{
+		required bytes chat_id = 1;
+		optional uint32 flag = 2;
+		repeated Message pinned_message = 3;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		optional uint32 flag = 2;
+		repeated Message message = 3;
+	}
+	extend comm.Reply { optional Reply ID = 192; }
+}
+
+message SendMessages
+{
+	message Request
+	{
+		repeated Message message = 1;
+	}
+	message Reply
+	{
+		repeated Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 193; }
+}
+
+message ReactMessage
+{
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bytes message_id = 2;
+		required string emoji_id = 3;
+	}
+	message Reply
+	{
+		required Message message = 1;
+	}
+	extend comm.Reply { optional Reply ID = 194; }
+}
+
+message ListReactions
+{
+	message Reaction
+	{
+		required Member reactor = 1;
+		required string emoji_id = 2;
+	}
+	message Request
+	{
+		required bytes chat_id = 1;
+		required bytes message_id = 2;
+	}
+	message Reply
+	{
+		repeated Reaction reaction = 1;
+	}
+	extend comm.Reply { optional Reply ID = 195; }
+}
+
+message CountMessage
+{
+	enum Type { NONE = 0; PIN = 1; PHOTO = 2; VIDEO = 4; FILE = 8; LINK = 16;}
+	message MessageNumber
+	{
+		optional uint32 type = 1;
+		optional uint32 count = 2;
+	}
+	message Request
+	{
+		required bytes chat_id = 1;
+		required uint32 type = 2;
+	}
+	message Reply
+	{
+		required bytes chat_id = 1;
+		repeated MessageNumber message_number = 2;
+	}
+	extend comm.Reply { optional Reply ID = 196; }
+}
+
+message GetListMentions 
+{ 
+ 	message Request 
+	{ 
+		required bytes chat_id = 1; 
+	} 
+	message Reply 
+	{ 
+		repeated bytes mentioned_member_id = 1;
+		repeated bytes list_message_mention_id = 2; 
+		required bytes chat_id = 3;
+	} 
+	extend comm.Reply { optional Reply ID = 197; } 
+}
+
+message GetListUserSeen
+{
+	message Request
+	{
+		required bytes chat_id = 1;	// chat_id
+		required bytes message_id = 2;	// message_id
+	}
+
+	message Reply
+	{
+		required bytes chat_id = 1;	// chat_id
+		required bytes message_id = 2;	// message_id
+		repeated UserSeen user_seen = 3;
+	} 
+	extend comm.Reply { optional Reply ID = 198; }
+}
+

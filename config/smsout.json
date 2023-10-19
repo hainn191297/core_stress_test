@@ -1,0 +1,12 @@
+{
+	"url_smsout" : "http://192.168.42.21:8081/WalaRoutingSMS/SMSSending",
+	"worker_count" : 4,
+	"queue_size" : 8192,
+	"first_vnum_zu_pattern" : "Quy khach se nhan duoc tin nhan cua nguoi ban \"%s\" tu ung dung nhan tin da phuong tien VietTalk thong qua so dien thoai nay. Quy khach co the tra loi tin nhan truc tiep tai day. Cam on quy khach da su dung ung dung.",
+	"first_vnum_nzu_pattern" : "Quy khach se nhan duoc tin nhan cua nguoi ban co so dien thoai +%s tu ung dung nhan tin da phuong tien VietTalk thong qua so dien thoai nay. Quy khach co the tra loi tin nhan truc tiep tai day. Xin cam on quy khach.",
+	"mms_content" : "Bạn có tin nhắn đa phương tiện mới. Vui lòng vào ứng dụng để xem!",
+	"timeout" : 15,
+	"sms_count" : 1,
+	"free_count" : 0,
+	"charge_value" : 1
+}

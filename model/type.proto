@@ -1,0 +1,90 @@
+package vt;
+
+/* entity type */
+message EntityType
+{
+	enum Type
+	{
+		USER		= 0;
+		CHAT		= 1;
+		MESSAGE		= 2;
+		SESSION		= 3;
+		CALL		= 4;
+		PASSCODE	= 5;
+		POST		= 6;
+		IMAGE		= 7;
+		COMMENT		= 8;
+		NOTIFICATION		= 9;
+        REPORT		= 10;
+        VNUM		= 11;
+        SHAKE_FRIEND		= 12;
+        FEEDBACK	= 13;
+		WORKSPACE	= 14;
+		NODE		= 15;	// For node
+		PRESENCE_SESSION	= 16;	// For presence session
+		PRESENCE_USER		= 17;	// For presence user
+		REQUEST		= 18;			// For request from outter
+		MESSAGE_HISTORY	= 19;		// For message history
+		PRESENCE_FRIEND	= 20;		// For presence of friend
+		CALL_OBJECT		= 21;		// For call object
+		CALL_ENDPOINT	= 22;		// For call endpoint
+	}
+}
+
+/* relation type */
+message RelationType
+{
+	enum Type
+	{
+		HAS_CHAT		= 0;
+		HAS_USER		= 1;
+		HAS_MESSAGE		= 2;
+		RELATE_TO		= 3;
+		HAS_SESSION		= 4;
+		HAS_CALL		= 5;
+		LIKED_BY		= 6;
+		HAS_COMMENT		= 7;
+		HAS_IMAGE		= 8;
+        HAS_REPORT		= 9;
+        FOLLOW			= 10;
+        INVITE_TO		= 11;
+        SMS_OUT			= 12;
+        FOLLOWED		= 13;
+		HAS_PRIVATE_CHAT		= 14;
+        SHARED_BY		= 15;
+        IN_PHONEBOOK	= 16;/*for send welcome message when user register */
+		HAS_MUTE_CHAT	= 17;
+		HAS_PRESENCE_SESSION	= 18;	// For presence user has presence session
+		CHAT_USER		= 19;	// Not use
+	}
+}
+
+/* index type */
+message IndexType
+{
+	enum Type
+	{
+		ACCOUNT		= 0;
+		PEER_CHAT	= 1;
+		VNUM		= 2;
+		TOKEN		= 3;
+		GEOHASH		= 4;
+		PENDING		= 5;
+		BLOCKED		= 6;
+        SYSTEM_ACCOUNT	= 7;
+        HOMEPAGE	= 8;
+        NEWSFEED	= 9;
+        NOTIFICATION	= 10;
+        PASS_CODE	= 11;
+        SHAKE_FRIEND	= 12;
+        REPORT_USER		= 13;
+        REPORT_POST		= 14;
+        FEEDBACK	= 15;
+		TOKEN_VOIP		= 17;
+		CALL		= 18;
+		WORKSPACE	= 19;
+		PRESENCE_USER	= 20;	// For presence user
+		NODE		= 21;		// For node
+		PRESENCE_SESSION = 22;	// For presence session
+	}
+}

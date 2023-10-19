@@ -1,0 +1,3 @@
+/Users/hainguyenngoc/Documents/core_stress_test/build/CMakeFiles/comm-server-engine.dir
+/Users/hainguyenngoc/Documents/core_stress_test/build/CMakeFiles/edit_cache.dir
+/Users/hainguyenngoc/Documents/core_stress_test/build/CMakeFiles/rebuild_cache.dir
